@@ -9,7 +9,24 @@ import SwiftUI
 
 struct HomeView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationStack {
+            ZStack {
+//                Color("BackColor")
+//                    .ignoresSafeArea()
+                
+                ScrollView {
+                    VStack(spacing: 10) {
+                        Rectangle()
+                            .frame(width: 200, height: 200)
+                            .cornerRadius(10)
+                            .shadow(color: Color("Shadow1"), radius: 3, x: -5, y: -5)
+                            .shadow(color: Color("Shadow2").opacity(0.23), radius: 3, x: 5, y: 5)
+                            .foregroundStyle(Color("BackColor"))
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+            }
+        }
     }
 }
 

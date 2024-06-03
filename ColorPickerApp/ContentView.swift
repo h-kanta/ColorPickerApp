@@ -6,56 +6,76 @@
 //
 
 import SwiftUI
-import SwiftData
+
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-
+    
+    init() {
+//        UITabBar.appearance().isHidden = true
+        // TabBarAppearanceの設定
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        // 背景色
+//        appearance.backgroundColor = UIColor(named: "BackColor")
+        // 下線（シャドウ）を透明にする
+        appearance.shadowColor = .clear
+        // 影をつける
+//        appearance.shadowColor = UIColor.black.withAlphaComponent(0.3)
+        
+        UITabBar.appearance().standardAppearance = appearance
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance().scrollEdgeAppearance = appearance
+        }
+        
+        //@StateObject var colorPickerState: ColorPickerViewState = .init()
+    }
+    
+    @State var currentTab: Tab = .home
+    @State var showColorPickerView: Bool = false
+    
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
-                }
-                .onDelete(perform: deleteItems)
+        ZStack {
+//            Rectangle()
+//                .frame(width: 100, height: 100)
+//                .cornerRadius(10)
+//                .shadow(color: Color("Shadow1"), radius: 3, x: -5, y: -5)
+//                .shadow(color: Color("Shadow2").opacity(0.23), radius: 3, x: 5, y: 5)
+//                .foregroundStyle(Color("MainColor"))
+            
+            TabView(selection: $currentTab) {
+                HomeView()
+                    .tag(Tab.home)
+                
+                ColorPaletteView()
+                    .tag(Tab.palette)
+                
+//                Text("パレット作成")
+//                    .tag(Tab.paletteCreate)
+                
+                SavedColorView()
+                    .tag(Tab.favoriteColor)
+                
+                OptionView()
+                    .tag(Tab.option)
             }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-        } detail: {
-            Text("Select an item")
+//            .background(GeometryReader { geometry in
+//                Color.clear.onAppear {
+//                    print("TabView height: \(geometry.size.height)")
+//                }
+//            })
+            
+            CustomTabBar(currentTab: $currentTab, showColorPicker: $showColorPickerView)
         }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+//        .ignoresSafeArea()
+        .fullScreenCover(isPresented: $showColorPickerView) {
+            // ここに全画面で表示するモーダルの内容を配置
+            ColorPickerView()
         }
+        
     }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
-        }
-    }
+    
 }
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
 }

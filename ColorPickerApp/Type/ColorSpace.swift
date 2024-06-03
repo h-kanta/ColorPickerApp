@@ -7,9 +7,12 @@
 
 import Foundation
 
-enum ColorParameter: CaseIterable {
+enum HSB: CaseIterable {
     case saturation
     case brightness
+}
+
+enum RGB: CaseIterable {
     case red
     case green
     case blue

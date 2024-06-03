@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class FavoriteColor {
+final class SavedColor {
     var hexCode: String
     var createdAt: Date
     var updatedAt: Date

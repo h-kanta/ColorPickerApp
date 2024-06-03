@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct FavoriteColorView: View {
+struct SavedColorView: View {
     
     let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 4)
     
@@ -15,11 +15,29 @@ struct FavoriteColorView: View {
         NavigationStack {
             ZStack {
                 // 背景色
-                Color("BackColor")
+//                Color("BackColor")
+//                    .ignoresSafeArea()
                 
                 VStack {
-                    // ヘッダー
-                    Header(headerTitle: "保存済み色", rightImageSystemName: Icon.sort.symbolName())
+                    // MARK: ナビゲーションバー
+                    CustomNavigationBarContainer(
+                        // 左
+                        leftContent: {
+                            Spacer()
+                        },
+                        // 中央
+                        centerContent: {
+                            Text("カラー")
+                        },
+                        // 右
+                        rightContent: {
+                            Button {
+                                
+                            } label: {
+                                Image(systemName: Icon.sort.symbolName())
+                            }
+                        }
+                    )
                     
                     // カラーグリッド
                     GeometryReader { geometry in
@@ -34,7 +52,6 @@ struct FavoriteColorView: View {
                     }
                 }
             }
-            .ignoresSafeArea(.all, edges: .top)
             .frame(maxHeight: .infinity)
             .padding(.bottom, 65)
         }
@@ -59,5 +76,5 @@ struct FavoriteColorView: View {
 }
 
 #Preview {
-    FavoriteColorView()
+    SavedColorView()
 }

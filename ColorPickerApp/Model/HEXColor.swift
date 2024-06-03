@@ -6,3 +6,12 @@
 //
 
 import Foundation
+
+struct HEXColor {
+    // hexコード
+    var code: String
+    
+    init(code: String) {
+        self.code = code
+    }
+}

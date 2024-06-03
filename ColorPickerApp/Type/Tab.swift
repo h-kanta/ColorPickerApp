@@ -7,6 +7,8 @@
 
 import Foundation
 
+
+// MARK: 下部タブ
 enum Tab: CaseIterable {
     case home
     case palette
@@ -60,6 +62,23 @@ extension Tab {
             return "square.grid.2x2.fill"
         case .option:
             return "gearshape.fill"
+        }
+    }
+}
+
+// MARK: カラーピッカー用のタブ
+enum ColorPickerTab: CaseIterable {
+    case hsb
+    case rgb
+}
+
+extension ColorPickerTab {
+    func tabName() -> String {
+        switch self {
+        case .hsb:
+            return "HSB"
+        case .rgb:
+            return "RGB"
         }
     }
 }

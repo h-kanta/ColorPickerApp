@@ -7,27 +7,31 @@
 
 import SwiftUI
 
-struct CustomNavigationBarContainer<Content: View>: View {
-    let leftContent: Content
-    let centerContent: Content
-    let rightContent: Content
+struct CustomNavigationBarContainer<LeftContent: View, CenterContent: View, RightContent: View>: View {
+    let leftContent: () -> LeftContent
+    let centerContent: () -> CenterContent
+    let rightContent: () -> RightContent
     
     var body: some View {
         ZStack {
             HStack {
                 // 左
-                leftContent
-                    .font(.title)
+                leftContent()
+                    .font(.title2)
                     .foregroundStyle(.black)
+                    .fontWeight(.bold)
+                
+                Spacer()
                 
                 // 右
-                rightContent
-                    .font(.title)
+                rightContent()
+                    .font(.title2)
                     .foregroundStyle(.black)
+                    .fontWeight(.bold)
             }
             
             // 中央
-            centerContent
+            centerContent()
                 .frame(maxWidth: .infinity)
                 .font(.title3)
                 .fontWeight(.bold)
@@ -37,5 +41,11 @@ struct CustomNavigationBarContainer<Content: View>: View {
 }
 
 //#Preview {
-//    CustomNavigationBar2()
+//    CustomNavigationBarContainer {
+//        Spacer()
+//        
+//        Text("テスト")
+//        
+//        Spacer()
+//    }
 //}
