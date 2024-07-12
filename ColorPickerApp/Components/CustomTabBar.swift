@@ -16,7 +16,7 @@ struct CustomTabBar: View {
     var body: some View {
         HStack {
             ForEach (Tab.allCases, id: \.hashValue) { tab in
-                VStack(spacing: 4) {
+                VStack(spacing: 5) {
                     if Tab.paletteCreate == tab {
                         Image(systemName: tab.symbolName())
                             .font(.title)
@@ -24,19 +24,19 @@ struct CustomTabBar: View {
 //                            .resizable()
 //                                .scaledToFit()
                             .frame(maxWidth: .infinity)
+                            .scaleEffect(1.5)
                             .offset(x: 0, y: 10)
                             .onTapGesture {
                                 showColorPicker = true
                             }
                     } else {
                         Image(systemName: currentTab == tab ? tab.symbolFillName() : tab.symbolName())
-                            .font(.title2)
+                            .font(.title)
 //                                .renderingMode(.template)
 //                            .resizable()
 //                                .scaledToFit()
                             .frame(maxWidth: .infinity)
                             .scaleEffect(currentTab == tab ? 1.2 : 1.0)
-                            .animation(.spring, value: currentTab)
                     }
                     
                     Text(tab.tabName())
@@ -44,9 +44,7 @@ struct CustomTabBar: View {
                         .foregroundColor(currentTab == tab ? .black : .gray)
                 }
                 .onTapGesture {
-//                        withAnimation(.spring(response: 0.4, dampingFraction: 0.2, blendDuration: 1)) {
-                        currentTab = tab
-//                        }
+                    currentTab = tab
                 }
             }
         }

@@ -16,6 +16,8 @@ enum Icon: CaseIterable {
     case favorite
     case copy
     case plus
+    case minus
+    case trash
 }
 
 extension Icon {
@@ -35,6 +37,10 @@ extension Icon {
             return "doc.on.doc"
         case .plus:
             return "plus"
+        case .minus:
+            return "minus"
+        case .trash:
+            return "trash"
         }
     }
 }

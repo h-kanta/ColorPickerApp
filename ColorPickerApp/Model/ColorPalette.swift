@@ -7,20 +7,22 @@
 
 import Foundation
 import SwiftData
+import SwiftUI
 
 @Model
 final class ColorPalette {
     var id: String
-    var colors: [HSBColor]
+    var colorDates: [HSBColor]
     var isFavorite: Bool
     var createdAt: Date
     var updatedAt: Date
     
-    init(colors: [HSBColor]) {
+    init(colorDates: [HSBColor]) {
         self.id = UUID().uuidString
-        self.colors = colors
+        self.colorDates = colorDates
         self.isFavorite = false
         self.createdAt = Date()
         self.updatedAt = Date()
     }
 }
+

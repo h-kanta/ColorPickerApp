@@ -15,6 +15,9 @@ class ColorPickerViewState: ObservableObject {
     @Published var radians: Double
     @Published var isDragging: Bool
     
+    // カラー情報をどのようにもつか、
+    // SwiftData とどのように連携するかを考える
+    
     @EnvironmentObject private var shared: GlobalSettings
     
     init() {
@@ -28,7 +31,7 @@ class ColorPickerViewState: ObservableObject {
     // MARK: コンバート
     // HSB から RGB に変換
     func HSBToRGB() {
-        rgbColor = hsbColor.ToRGB()
+         rgbColor = hsbColor.ToRGB()
     }
     
     // RGB から HSB に変換

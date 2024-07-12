@@ -12,48 +12,36 @@ import SwiftUI
 import SwiftUI
 
 struct Sample: View {
-    let sampleColors: [Color] = [.mint, .cyan, .pink, .yellow]
-    @State private var currentColor: Int? = nil
+    @State var sampleColors: [Color] = [.mint, .cyan, .pink, .yellow, .pink]
+//    @State var sampleColorAll: [Color] = [.mint, .cyan, .pink, .yellow, .pink]
+    @State private var currentColor1: Int = 0
+//    @State private var currentColor2: Int = 0
     
-    let screenHeight: CGFloat = UIScreen.main.bounds.height
-    let screenWidth: CGFloat = UIScreen.main.bounds.width
+    @EnvironmentObject private var shared: GlobalSettings
     
     var body: some View {
-        // MARK: プレビューカラー
-        HStack(spacing: 0) {
-            ForEach(sampleColors.indices, id: \.self) { index in
-                Rectangle()
-                    .frame(height: screenHeight * 0.1)
-                    .offset(y: currentColor == index ? -10 : 0)
-                    .foregroundStyle(sampleColors[index])
-                    .onTapGesture {
-                        withAnimation {
-                            currentColor = index
-                        }
-                    }
+        ZStack {
+            GeometryReader { geometryProxy in
+                Button {
+                    print(geometryProxy.frame(in: .named("container")).origin.x,
+                          geometryProxy.frame(in: .named("container")).origin.y)
+                } label: {
+                    Rectangle()
+                        .frame(width: 100, height: 100)
+                        .foregroundStyle(.red)
+                        .coordinateSpace(.named("container"))
+                }
+                
+                .position(x: 100, y: 100)
             }
             
-            // カラーが 5 以上の場合は、追加ボタンを表示
-            if sampleColors.count < 5 {
-                // 追加ボタン
-                ZStack {
-                    Rectangle()
-                        .frame(height: screenHeight * 0.1)
-                        .foregroundStyle(.white)
-                    
-                    Image(systemName: "plus")
-                        .font(.title2)
-                }
-            }
+            
+            
         }
-        .cornerRadius(10)
-//        .shadow(color: Color("Shadow1"), radius: 1, x: -4, y: -4)
-//        .shadow(color: Color("Shadow2").opacity(0.23), radius: 3, x: 3, y: 3)
-        .padding(.horizontal, screenWidth * 0.05)
-        .padding(.bottom, screenWidth * 0.05)
     }
 }
 
 #Preview {
     Sample()
+        .environmentObject(GlobalSettings())
 }

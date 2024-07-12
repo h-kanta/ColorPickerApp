@@ -10,6 +10,8 @@ import SwiftUI
 struct HSBColorPickerView: View {
     
     @ObservedObject var colorPickerState: ColorPickerViewState
+    @Binding var colors: [Color]
+    @Binding var selectedColorIndex: Int
     
     @EnvironmentObject private var shared: GlobalSettings
     
@@ -38,7 +40,7 @@ struct HSBColorPickerView: View {
                             Color(hue: 0.1, saturation: 1.0, brightness: 1.0),
                             Color(hue: 0.0, saturation: 1.0, brightness: 1.0),
                         ]), center: .center)
-                        , lineWidth: 12)
+                        , lineWidth: 16)
                     .frame(width: shared.hueBarSize, height: shared.hueBarSize)
                     .shadow(color: Color("Shadow1"), radius: 5, x: 5, y: 5)
                     .shadow(color: Color("Shadow1"), radius: 5, x: -5, y: -5)
@@ -181,7 +183,7 @@ struct HSBColorPickerView: View {
                 .frame(width: 32, height: 32)
                 .offset(x: colorPickerState.hsbColor.brightness * shared.hueBarSize)
                 .animation(.spring, value: colorPickerState.hsbColor.brightness)
-                .gesture(saturationThumbDragGesture)
+                .gesture(brightnessThumbDragGesture)
             }
         }
     }
@@ -214,6 +216,9 @@ struct HSBColorPickerView: View {
                 
                 colorPickerState.HSBToRGB()
                 colorPickerState.RGBToHEX()
+                colors[selectedColorIndex] = Color(hue: colorPickerState.hsbColor.hue,
+                                  saturation: colorPickerState.hsbColor.saturation,
+                                  brightness: colorPickerState.hsbColor.brightness)
             }
     }
     // サム

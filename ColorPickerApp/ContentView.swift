@@ -69,7 +69,8 @@ struct ContentView: View {
 //        .ignoresSafeArea()
         .fullScreenCover(isPresented: $showColorPickerView) {
             // ここに全画面で表示するモーダルの内容を配置
-            ColorPickerView()
+            ColorPickerView(colorPickerState: .init())
+                .environmentObject(GlobalSettings())
         }
         
     }
