@@ -39,13 +39,3 @@ struct CustomNavigationBarContainer<LeftContent: View, CenterContent: View, Righ
         .padding(.horizontal)
     }
 }
-
-//#Preview {
-//    CustomNavigationBarContainer {
-//        Spacer()
-//        
-//        Text("テスト")
-//        
-//        Spacer()
-//    }
-//}

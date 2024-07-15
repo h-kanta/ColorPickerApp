@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SavedColorView: View {
+struct StorageColorView: View {
     
     let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 4)
     
@@ -76,5 +76,5 @@ struct SavedColorView: View {
 }
 
 #Preview {
-    SavedColorView()
+    StorageColorView()
 }

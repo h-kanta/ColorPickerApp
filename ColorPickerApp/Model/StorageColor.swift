@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class SavedColor {
+final class StorageColor {
     var hexCode: String
     var createdAt: Date
     var updatedAt: Date

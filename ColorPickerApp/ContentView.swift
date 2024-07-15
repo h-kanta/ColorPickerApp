@@ -52,7 +52,7 @@ struct ContentView: View {
 //                Text("パレット作成")
 //                    .tag(Tab.paletteCreate)
                 
-                SavedColorView()
+                StorageColorView()
                     .tag(Tab.favoriteColor)
                 
                 OptionView()
