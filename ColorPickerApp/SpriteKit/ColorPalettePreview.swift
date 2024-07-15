@@ -15,13 +15,14 @@ class ColorPalettePreviewScene: SKScene {
     @Binding var isDrag: Bool
     @Binding var selectedColorIndex: Int
     
-    var colorNodes: [SKSpriteNode] = [] // ノードを保持する配列
+    // ノードを保持する配列
+    var colorNodes: [SKShapeNode] = []
     
     // 背景用ノード
     var backgroundNode: SKSpriteNode
     
     // ドラッグされたカラービュー
-    var dragedColorNode: SKSpriteNode?
+    var dragedColorNode: SKShapeNode?
     // ドラッグされたカラービューの初期位置
     var dragedColorNodeInitPosition: CGPoint = CGPoint()
     
@@ -29,7 +30,7 @@ class ColorPalettePreviewScene: SKScene {
     var colorPreviewAddNode: SKSpriteNode = .init()
     
     // 選択中のカラープレビューのマーキング用ノード
-    var selectedColorNode: SKSpriteNode = .init()
+    var selectedColorNode: SKShapeNode = .init()
     
     // ゴミ箱
     var trashCircleNode: SKShapeNode = .init()
@@ -51,7 +52,7 @@ class ColorPalettePreviewScene: SKScene {
         self.shared = shared
         // カラープレビューサイズ
         self.rectWidth = shared.screenWidth / 6
-        self.rectHeight = shared.screenWidth / 5
+        self.rectHeight = shared.screenWidth / 5.5
         // 背景用ノード
         backgroundNode = SKSpriteNode(color: .clear,
                                       size: CGSize(width: shared.screenWidth * UITraitCollection.current.displayScale,
@@ -101,17 +102,34 @@ class ColorPalettePreviewScene: SKScene {
         
         // カラープレビュー
         for (index, color) in colors.enumerated() {
-            let node = SKSpriteNode(color: UIColor(color), size: CGSize(width: rectWidth, height: rectHeight))
-            node.position = CGPoint(x: rectWidth * CGFloat(index) + (rectWidth / 2) + (spaceSize * CGFloat(index+1)),
-                                    y: (shared.screenHeight - shared.screenHeight/1.05) + (rectHeight/2))
-            node.name = "colorNode"
-            addChild(node)
-            colorNodes.append(node)
+//            let node = SKSpriteNode(color: UIColor(color), size: CGSize(width: rectWidth, height: rectHeight))
+//            node.position = CGPoint(x: rectWidth * CGFloat(index) + (rectWidth / 2) + (spaceSize * CGFloat(index+1)),
+//                                    y: (shared.screenHeight - shared.screenHeight/1.05) + (rectHeight/2))
+            let colorNodePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: rectWidth, height: rectHeight),
+                                             cornerRadius: 5)
+            
+            let colorNode = SKShapeNode(path: colorNodePath.cgPath)
+            colorNode.position = CGPoint(x: rectWidth * CGFloat(index) + (spaceSize * CGFloat(index+1)),
+                                         y: (shared.screenHeight - shared.screenHeight/1.05))
+            colorNode.fillColor = UIColor(color)
+            colorNode.name = "colorNode"
+            colorNode.zPosition = 1
+
+            addChild(colorNode)
+            colorNodes.append(colorNode)
         }
         
         // 選択中のカラープレビューをマーク
-        selectedColorNode = SKSpriteNode(color: UIColor(colors[selectedColorIndex].opacity(0.5)), size: CGSize(width: rectWidth*1.3, height: rectHeight*1.3))
-        selectedColorNode.position = colorNodes[selectedColorIndex].position
+        let selectedColorNodePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: rectWidth*1.3, height: rectHeight*1.3),
+                                                 cornerRadius: 10)
+        
+//        selectedColorNode = SKSpriteNode(color: UIColor(colors[selectedColorIndex].opacity(0.5)), size: CGSize(width: rectWidth*1.3, height: rectHeight*1.3))
+//        selectedColorNode.position = colorNodes[selectedColorIndex].position
+        selectedColorNode = SKShapeNode(path: selectedColorNodePath.cgPath)
+        selectedColorNode.position = CGPoint(x: colorNodes[selectedColorIndex].position.x - (rectWidth*1.3-rectWidth)/2,
+                                             y: colorNodes[selectedColorIndex].position.y - (rectHeight*1.3-rectHeight)/2)
+        selectedColorNode.fillColor = UIColor(colors[selectedColorIndex].opacity(0.5))
+        selectedColorNode.zPosition = 0
         addChild(selectedColorNode)
     }
     
@@ -153,8 +171,8 @@ class ColorPalettePreviewScene: SKScene {
 //            colorNode.color = UIColor(colors[index])
 //        }
         
-        colorNodes[selectedColorIndex].color = UIColor(colors[selectedColorIndex])
-        selectedColorNode.color = UIColor(colors[selectedColorIndex].opacity(0.5))
+        colorNodes[selectedColorIndex].fillColor = UIColor(colors[selectedColorIndex])
+        selectedColorNode.fillColor = UIColor(colors[selectedColorIndex].opacity(0.5))
         
 //        // カラープレビュー再配置
 //        // カラープレビュー全体の幅
@@ -177,16 +195,19 @@ class ColorPalettePreviewScene: SKScene {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
-        if let node = atPoint(location) as? SKSpriteNode, node.name == "colorNode" {
+        if let node = atPoint(location) as? SKShapeNode, node.name == "colorNode" {
             // 選択したカラービューの index を取得
             for (index, colorNode) in colorNodes.enumerated() {
                 if node == colorNode {
                     //  選択したカラープレビューの index を保持（カラーピッカー画面とバインドしているため）
                     selectedColorIndex = index
                     // 選択中のカラープレビューをマーク
-                    let moveAction = SKAction.move(to: colorNode.position, duration: 0.2)
+                    let moveAction = SKAction.move(to: CGPoint(x: node.position.x - (rectWidth*1.3-rectWidth)/2,
+                                                               y: node.position.y - (rectHeight*1.3-rectHeight)/2),
+                                                   duration: 0.2)
                     let moveSequence = SKAction.sequence([moveAction])
                     selectedColorNode.run(moveSequence)
+                    
                     // 選択中のカラープレビューの色を変更
                     let selectedColorAction = SKAction.colorize(with: UIColor(colors[selectedColorIndex].opacity(0.5)), colorBlendFactor: 1.0, duration: 0.2)
                     let selectedColorSequence = SKAction.sequence([selectedColorAction])
@@ -206,7 +227,7 @@ class ColorPalettePreviewScene: SKScene {
             let convertedLocation = convertPoint(fromView: location)
             
             // タップされた位置にノードが存在するか確認
-            if let node = atPoint(convertedLocation) as? SKSpriteNode, node.name == "colorNode" {
+            if let node = atPoint(convertedLocation) as? SKShapeNode, node.name == "colorNode" {
                 let scaleDown = SKAction.scale(to: 0.9, duration: 0.2) // 2倍に拡大
                 let scaleUp = SKAction.scale(to: 1.2, duration: 0.2) // 元の半分に縮小
                 let sequence = SKAction.sequence([scaleDown, scaleUp])
@@ -238,7 +259,7 @@ class ColorPalettePreviewScene: SKScene {
         case .changed:
             if let node = dragedColorNode {
                 let newLocation = recognizer.location(in: view)
-                node.position = CGPoint(x: newLocation.x, y: shared.screenHeight - newLocation.y)
+                node.position = CGPoint(x: newLocation.x - rectWidth/2, y: shared.screenHeight - (newLocation.y + rectHeight/2))
                 
                 // カラープレビューは最低2つのため、2つ以下の場合は削除不可
                 // 接触判定
@@ -246,8 +267,8 @@ class ColorPalettePreviewScene: SKScene {
                     if isCollisionBetweenCircleAndRect(circleCenterX: trashCircleNode.position.x,
                                                        circleCenterY: trashCircleNode.position.y,
                                                        radius: shared.screenHeight / 18,
-                                                       rectCenterX: node.position.x,
-                                                       rectCenterY: node.position.y,
+                                                       rectCenterX: node.position.x + rectWidth/2,
+                                                       rectCenterY: node.position.y + rectHeight/2,
                                                        width: rectWidth,
                                                        height: rectHeight) {
                         trashCircleNode.fillColor = UIColor(.red.opacity(0.8))
@@ -278,7 +299,6 @@ class ColorPalettePreviewScene: SKScene {
                             
                             if selectedColorIndex == colors.count {
                                 selectedColorIndex = colors.count - 1
-                                print(selectedColorIndex)
                             }
                         }
                     }
@@ -292,16 +312,20 @@ class ColorPalettePreviewScene: SKScene {
                     let spaceSize: CGFloat = differenceSize / CGFloat(colors.count+1)
                     // カラー再配置
                     for (index, colorNode) in colorNodes.enumerated() {
-                        let colorNodeMoveAction = SKAction.move(to: CGPoint(x: rectWidth * CGFloat(index) + (rectWidth / 2) + (spaceSize * CGFloat(index+1)),
-                                                                   y: (shared.screenHeight - shared.screenHeight/1.05) + (rectHeight/2)),
+                        let colorNodeMoveAction = SKAction.move(to: CGPoint(x: rectWidth * CGFloat(index) + (spaceSize * CGFloat(index+1)),
+                                                                   y: (shared.screenHeight - shared.screenHeight/1.05)),
                                                         duration: 0.2)
                         let colorNodeMoveSequence = SKAction.sequence([colorNodeMoveAction])
                         colorNode.run(colorNodeMoveSequence)
                     }
                     
                     // 選択中のカラープレビューをマーク
-                    let selectedColorMoveAction = SKAction.move(to: CGPoint(x: rectWidth * CGFloat(selectedColorIndex) + (rectWidth / 2) + (spaceSize * CGFloat(selectedColorIndex+1)),
-                                                                            y: colorNodes[selectedColorIndex].position.y), duration: 0.2)
+                    let selectedColorMoveAction = SKAction.move(
+//                        to: CGPoint(x: colorNodes[selectedColorIndex].position.x - (rectWidth*1.3-rectWidth)/2,
+//                                    y: colorNodes[selectedColorIndex].position.y - (rectHeight*1.3-rectHeight)/2),                        
+                        to: CGPoint(x: (rectWidth * CGFloat(selectedColorIndex) + (spaceSize * CGFloat(selectedColorIndex+1))) - (rectWidth*1.3-rectWidth)/2,
+                                    y: (shared.screenHeight - shared.screenHeight/1.05) - (rectWidth*1.3-rectWidth)/2),
+                        duration: 0.2)
                     // 選択中のカラープレビューの色を変更
                     let selectedColorAction = SKAction.colorize(with: UIColor(colors[selectedColorIndex].opacity(0.5)), colorBlendFactor: 1.0, duration: 0.2)
                     let selectedColorSequence = SKAction.sequence([selectedColorMoveAction, selectedColorAction])
@@ -324,7 +348,7 @@ class ColorPalettePreviewScene: SKScene {
                     node.run(moveSequence)
                     
                     dragedColorNode = nil
-                    node.zPosition = 0
+                    node.zPosition = 1
                 }
                 
                 // 背景色クリア

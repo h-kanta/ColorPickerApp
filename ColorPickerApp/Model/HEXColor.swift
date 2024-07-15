@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct HEXColor {
+struct HEXColor: Codable, Hashable {
     // hexコード
     var code: String
     

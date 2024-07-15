@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct RGBColor {
+struct RGBColor: Codable, Hashable {
     // Red
     // 0.0~1.0の範囲
     var red: Double

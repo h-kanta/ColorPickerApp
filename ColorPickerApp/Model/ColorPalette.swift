@@ -12,12 +12,12 @@ import SwiftUI
 @Model
 final class ColorPalette {
     var id: String
-    var colorDates: [HSBColor]
+    var colorDates: [ColorData]
     var isFavorite: Bool
     var createdAt: Date
     var updatedAt: Date
     
-    init(colorDates: [HSBColor]) {
+    init(colorDates: [ColorData]) {
         self.id = UUID().uuidString
         self.colorDates = colorDates
         self.isFavorite = false
