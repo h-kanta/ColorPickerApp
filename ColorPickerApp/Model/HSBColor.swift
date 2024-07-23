@@ -20,15 +20,30 @@ struct HSBColor: Codable, Hashable {
     // 0.0 ~ 1.0
     // (0%（完全な黒）から100%（完全な白）までの範囲)
     var brightness: Double
+    // 色相の角度
+    var hueRadian: Double
+    
+    // 色相の角度を HSBColor で管理しようとしているが、ラジアンを計算しないといけない
+    // 計算方法を考えるところからスタートーーーーーーーーーーーーーーー
     
     init(hue: Double, saturation: Double, brightness: Double) {
         self.hue = hue
         self.saturation = saturation
         self.brightness = brightness
+        
+        // 色相からラジアンを計算
+        // 色相を0~360の範囲にし、範囲の角度を反対にする
+        var angleRad = (360 - (hue * 360)).truncatingRemainder(dividingBy: 360)
+        // マイナスの場合は 360 足して調整
+        if angleRad < 0 {
+            angleRad += 360
+        }
+        // 角度からラジアンに変換
+        hueRadian = (angleRad * .pi) / 180
     }
     
     // MARK: HSB から RGB に変換
-    func ToRGB() -> RGBColor {
+    func toRGB() -> RGBColor {
         // 変換用rgb
         var red: Double = 0
         var green: Double = 0
@@ -84,5 +99,10 @@ struct HSBColor: Codable, Hashable {
         }
         
         return RGBColor(red: red/255, green: green/255, blue: blue/255)
+    }
+    
+    // MARK: HSB から HEX に変換
+    func toHEX() -> HEXColor {
+        return HEXColor(code: "000000")
     }
 }

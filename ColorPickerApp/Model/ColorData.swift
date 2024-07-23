@@ -8,15 +8,25 @@
 import Foundation
 
 struct ColorData: Codable, Hashable {
-    var hsbColor: HSBColor
-    var rgbColor: RGBColor
-    var hexColor: HEXColor
-    var radians: Double
+    var hsb: HSBColor
+    var rgb: RGBColor
+    var hex: HEXColor
     
-    init() {
-        hsbColor = HSBColor(hue: 0, saturation: 1.0, brightness: 1.0)
-        rgbColor = RGBColor(red: 0, green: 0, blue: 0)
-        hexColor = HEXColor(code: "000000")
-        radians = 0
+    init(hsb: HSBColor, rgb: RGBColor? = nil, hex: HEXColor? = nil) {
+        self.hsb = hsb
+        self.rgb = rgb ?? hsb.toRGB() // HSBからRGBへ変換
+        self.hex = hex ?? hsb.toHEX() // HSBからHEXへ変換
+    }
+    
+    init(rgb: RGBColor, hsb: HSBColor? = nil, hex: HEXColor? = nil) {
+        self.rgb = rgb
+        self.hsb = hsb ?? rgb.toHSB() // RGBからHSBへ変換
+        self.hex = hex ?? rgb.toHEX() // RGBからHEXへ変換
+    }
+    
+    init(hex: HEXColor, hsb: HSBColor? = nil, rgb: RGBColor? = nil) {
+        self.hex = hex
+        self.rgb = rgb ?? hex.toRGB() // HEXからRGBへ変換
+        self.hsb = hsb ?? hex.toHSB() // HEXからHSBへ変換
     }
 }

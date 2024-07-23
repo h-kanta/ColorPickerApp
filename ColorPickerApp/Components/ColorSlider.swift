@@ -10,7 +10,7 @@ import SwiftUI
 struct ColorSlider: View {
     
     
-    @ObservedObject var colorPickerState: ColorPickerViewState
+    @ObservedObject var colorState: ColorPickerViewState
     
     // グラデーションに使用するカラー配列
     let colors: [Color]
@@ -43,12 +43,8 @@ struct ColorSlider: View {
                     .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
             }
             .frame(width: 32, height: 32)
-            .offset(x: colorPickerState.hsbColor.brightness * hueSize)
+            .offset(x: colorState.colorDatas[colorState.selectedIndex].hsb.brightness * hueSize)
             .gesture(colorThumbDragGesture)
         }
     }
-}
-
-#Preview {
-    ColorPickerView()
 }

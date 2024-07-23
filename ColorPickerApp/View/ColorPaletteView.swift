@@ -6,15 +6,18 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ColorPaletteView: View {
+    
+    // SwiftData のデータを使用
+    @Environment(\.modelContext) private var context
+    // ColorPalette のデータを取得するために宣言
+    @Query private var colorPalettes: [ColorPalette]
+    
     var body: some View {
         NavigationStack {
             ZStack {
-                // 背景色
-//                Color("BackColor")
-//                    .ignoresSafeArea()
-                
                 VStack {
                     // MARK: ナビゲーションバー
                     CustomNavigationBarContainer(
@@ -38,10 +41,9 @@ struct ColorPaletteView: View {
                     
                     ScrollView {
                         VStack(spacing: 40) {
-                            colorPaletteCardView()
-//                            colorPaletteItemView()
-//                            colorPaletteItemView()
-//                            colorPaletteItemView()
+                            ForEach(colorPalettes) { colorPalette in
+                                colorPaletteCardView(colorPalete: colorPalette)
+                            }
                         }
                         .padding()
                     }
@@ -50,40 +52,61 @@ struct ColorPaletteView: View {
         }
     }
     
-    func colorPaletteCardView() -> some View {
+    // MARK: カラーパレットカード
+    func colorPaletteCardView(colorPalete: ColorPalette) -> some View {
         ZStack {
             Rectangle()
                 .foregroundStyle(.white)
                 .cornerRadius(10)
-                .shadow(color: Color("Shadow2").opacity(0.23), radius: 8, x: -3, y: -3)
-                .shadow(color: Color("Shadow2").opacity(0.23), radius: 8, x: 3, y: 3)
+                .shadow(color: Color("Shadow2").opacity(0.20), radius: 10, x: -5, y: -3)
+                .shadow(color: Color("Shadow2").opacity(0.20), radius: 10, x: 5, y: 3)
             
             VStack(spacing: 0) {
                 HStack {
-                    Image(systemName: Icon.favorite.symbolName())
-                        .foregroundStyle(.red)
-                        .font(.title)
+                    // お気に入り
+                    if colorPalete.isFavorite {
+                        Image(systemName: Icon.favorite.symbolName() + ".fill")
+                            .foregroundStyle(.red)
+                            .font(.title)
+                    } else {
+                        Image(systemName: Icon.favorite.symbolName())
+                            .foregroundStyle(.red)
+                            .font(.title)
+                    }
                     
                     Spacer()
                     
+                    // メニュー
                     Image(systemName: Icon.menu.symbolName())
-                        .font(/*@START_MENU_TOKEN@*/.title/*@END_MENU_TOKEN@*/)
+                        .font(.title)
                 }
                 .padding()
                 
+                // MARK: カラー
                 HStack(spacing: 0) {
-                    Rectangle()
-                        .foregroundStyle(.red)
-                        .cornerRadius(10, corners: .bottomLeft)
-                    Rectangle()
-                        .foregroundStyle(.green)
-                    Rectangle()
-                        .foregroundStyle(.cyan)
-                    Rectangle()
-                        .foregroundStyle(.mint)
-                    Rectangle()
-                        .foregroundStyle(.blue)
-                        .cornerRadius(10, corners: .bottomRight)
+                    ForEach(colorPalete.colorDates, id: \.self) { color in
+                        // 最初のカラーは、左下が角丸
+                        if color == colorPalete.colorDates.first {
+                            Rectangle()
+                                .foregroundStyle(Color(hue: color.hsb.hue,
+                                                       saturation: color.hsb.saturation,
+                                                       brightness: color.hsb.brightness))
+                                .cornerRadius(10, corners: .bottomLeft)
+                        // 最後のカラーは、右下が角丸
+                        } else if color == colorPalete.colorDates.last {
+                            Rectangle()
+                                .foregroundStyle(Color(hue: color.hsb.hue,
+                                                       saturation: color.hsb.saturation,
+                                                       brightness: color.hsb.brightness))
+                                .cornerRadius(10, corners: .bottomRight)
+                        // その他は、角丸なし
+                        } else {
+                            Rectangle()
+                                .foregroundStyle(Color(hue: color.hsb.hue,
+                                                       saturation: color.hsb.saturation,
+                                                       brightness: color.hsb.brightness))
+                        }
+                    }
                 }
             }
         }

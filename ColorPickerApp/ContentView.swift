@@ -10,6 +10,15 @@ import SwiftUI
 
 struct ContentView: View {
     
+    // カラーデータ
+    @StateObject var colorState: ColorPickerViewState = .init(colorDatas: [
+        ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.5)),
+        ColorData(hsb: HSBColor(hue: 0.3, saturation: 0.5, brightness: 0.2))
+    ])
+    
+    @State var currentTab: Tab = .home
+    @State var showColorPickerView: Bool = false
+    
     init() {
 //        UITabBar.appearance().isHidden = true
         // TabBarAppearanceの設定
@@ -29,9 +38,6 @@ struct ContentView: View {
         
         //@StateObject var colorPickerState: ColorPickerViewState = .init()
     }
-    
-    @State var currentTab: Tab = .home
-    @State var showColorPickerView: Bool = false
     
     var body: some View {
         ZStack {
@@ -69,8 +75,11 @@ struct ContentView: View {
 //        .ignoresSafeArea()
         .fullScreenCover(isPresented: $showColorPickerView) {
             // ここに全画面で表示するモーダルの内容を配置
-            ColorPickerView(colorPickerState: .init())
+            ColorPickerView(colorState: colorState)
                 .environmentObject(GlobalSettings())
+        }
+        .onAppear {
+            print(colorState)
         }
         
     }

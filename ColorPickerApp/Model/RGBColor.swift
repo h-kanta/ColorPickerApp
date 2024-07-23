@@ -37,7 +37,7 @@ struct RGBColor: Codable, Hashable {
     }
     
     // MARK: RGB から HSB に変換
-    func ToHSB() -> HSBColor {
+    func toHSB() -> HSBColor {
         // RGB
         let (red, green, blue) = (self.red, self.green, self.blue)
 
@@ -82,7 +82,7 @@ struct RGBColor: Codable, Hashable {
 
         return HSBColor(hue: hue / 360, saturation: saturation, brightness: brightness)
     }
-
+    
 //    func ToHSB(rgbColor: RGBColor) -> HSBColor {
 //        // HSB
 //        var hue: Double = 0
@@ -128,7 +128,7 @@ struct RGBColor: Codable, Hashable {
 //    }
     
     // MARK: RGB から HEX に変換
-    func ToHEX() -> HEXColor {
+    func toHEX() -> HEXColor {
         // 変換用にred, green, blue を配列に格納
         let rgb: [Double] = [self.red*255, self.green*255, self.blue*255]
         // red, green, blurを整数に変換し、その値を16進数の形式にフォーマット

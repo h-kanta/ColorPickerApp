@@ -9,10 +9,8 @@ import SwiftUI
 
 struct HSBColorPickerView: View {
     
-    @ObservedObject var colorPickerState: ColorPickerViewState
-    @Binding var colors: [Color]
-    @Binding var selectedColorIndex: Int
-    
+    @ObservedObject var colorState: ColorPickerViewState
+
     @EnvironmentObject private var shared: GlobalSettings
     
     // 色相角度
@@ -49,23 +47,26 @@ struct HSBColorPickerView: View {
                 // サム
                 Circle()
                     .frame(width: shared.hueBarSize * 0.2, height: shared.hueBarSize * 0.2)
-                    .foregroundStyle(Color(hue: colorPickerState.hsbColor.hue,
-                                           saturation: colorPickerState.hsbColor.saturation,
-                                           brightness: colorPickerState.hsbColor.brightness))
+                    .foregroundStyle(Color(
+                        hue: colorState.colorDatas[colorState.selectedIndex].hsb.hue,
+                        saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
+                        brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness))
                     .shadow(color: Color("Shadow1"), radius: 3, x: -3, y: -3)
                     .shadow(color: Color("Shadow2").opacity(0.23), radius: 3, x: 3, y: 3)
-                    .offset(x: cos(colorPickerState.radians) * shared.hueBarSize/2,
-                            y: sin(colorPickerState.radians) * shared.hueBarSize/2)
-                    .animation(.spring, value: colorPickerState.hsbColor.hue)
+                    .offset(x: cos(colorState.colorDatas[colorState.selectedIndex].hsb.hueRadian) * shared.hueBarSize/2,
+                            y: sin(colorState.colorDatas[colorState.selectedIndex].hsb.hueRadian) * shared.hueBarSize/2)
+                    .animation(.spring,
+                               value: colorState.colorDatas[colorState.selectedIndex].hsb.hue)
                     .gesture(hueThumbDragGesture)
                 
                 VStack {
                     // MARK: カラープレビュー
                     Rectangle()
                         .frame(width: shared.hueBarSize * 0.3, height: shared.hueBarSize * 0.3)
-                        .foregroundStyle(Color(hue: colorPickerState.hsbColor.hue,
-                                               saturation: colorPickerState.hsbColor.saturation,
-                                               brightness: colorPickerState.hsbColor.brightness))
+                        .foregroundStyle(Color(
+                            hue: colorState.colorDatas[colorState.selectedIndex].hsb.hue,
+                            saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
+                            brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness))
                         .cornerRadius(10)
                         .shadow(color: Color("Shadow2").opacity(0.23), radius: 1, x: 4, y: 4)
                         .padding(8)
@@ -74,7 +75,7 @@ struct HSBColorPickerView: View {
                     HStack {
                         HStack {
                             Text("#")
-                            TextField("", text: $colorPickerState.hexColor.code)
+                            TextField("", text: $colorState.colorDatas[colorState.selectedIndex].hex.code)
                         }
                         .font(.title3)
                         .fontWeight(.bold)
@@ -84,8 +85,8 @@ struct HSBColorPickerView: View {
                         
                         // コピーボタン
                         Button {
-                            UIPasteboard.general.string = colorPickerState.hexColor.code
-                            print(colorPickerState.hexColor.code)
+                            UIPasteboard.general.string = colorState.colorDatas[colorState.selectedIndex].hex.code
+                            print(colorState.colorDatas[colorState.selectedIndex].hex.code)
                         } label: {
                             Image(systemName: Icon.copy.symbolName())
                                 .font(.title3)
@@ -112,7 +113,8 @@ struct HSBColorPickerView: View {
                 Text("彩度")
                 Spacer()
                 // パーセント
-                Text(colorPickerState.convertToPercentage(colorPickerState.hsbColor.saturation))
+                Text(colorState.convertToPercentage(
+                    colorState.colorDatas[colorState.selectedIndex].hsb.saturation))
             }
             .fontWeight(.bold)
             
@@ -121,9 +123,10 @@ struct HSBColorPickerView: View {
                 // バー
                 RoundedRectangle(cornerRadius: 10)
                     .fill(LinearGradient(gradient: Gradient(colors: (0...10).map { 
-                        Color(hue: colorPickerState.hsbColor.hue,
+                        Color(
+                            hue: colorState.colorDatas[colorState.selectedIndex].hsb.hue,
                               saturation: Double($0) * 0.1,
-                              brightness: colorPickerState.hsbColor.brightness)
+                            brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness)
                     }), startPoint: .leading, endPoint: .trailing))
                     .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.02)
                     .gesture(saturationBarDragGesture)
@@ -139,8 +142,8 @@ struct HSBColorPickerView: View {
                         .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
                 }
                 .frame(width: 32, height: 32)
-                .offset(x: colorPickerState.hsbColor.saturation * shared.hueBarSize)
-                .animation(.spring, value: colorPickerState.hsbColor.saturation)
+                .offset(x: colorState.colorDatas[colorState.selectedIndex].hsb.saturation * shared.hueBarSize)
+                .animation(.spring, value: colorState.colorDatas[colorState.selectedIndex].hsb.saturation)
                 .gesture(saturationThumbDragGesture)
             }
         }
@@ -152,7 +155,8 @@ struct HSBColorPickerView: View {
                 Text("明度")
                 Spacer()
                 // パーセント
-                Text(colorPickerState.convertToPercentage(colorPickerState.hsbColor.brightness))
+                Text(colorState.convertToPercentage(
+                    colorState.colorDatas[colorState.selectedIndex].hsb.brightness))
             }
             .fontWeight(.bold)
             
@@ -162,8 +166,8 @@ struct HSBColorPickerView: View {
                 RoundedRectangle(cornerRadius: 10)
                     .fill(LinearGradient(gradient: Gradient(
                                                 colors: (0...10).map { Color(
-                                                     hue: colorPickerState.hsbColor.hue,
-                                                     saturation: colorPickerState.hsbColor.saturation,
+                                                    hue: colorState.colorDatas[colorState.selectedIndex].hsb.hue,
+                                                     saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
                                                      brightness: Double($0) * 0.1)}),
                                          startPoint: .leading,
                                          endPoint: .trailing))
@@ -181,8 +185,10 @@ struct HSBColorPickerView: View {
                         .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
                 }
                 .frame(width: 32, height: 32)
-                .offset(x: colorPickerState.hsbColor.brightness * shared.hueBarSize)
-                .animation(.spring, value: colorPickerState.hsbColor.brightness)
+                .offset(
+                    x: colorState.colorDatas[colorState.selectedIndex].hsb.brightness * shared.hueBarSize)
+                .animation(.spring,
+                           value: colorState.colorDatas[colorState.selectedIndex].hsb.brightness)
                 .gesture(brightnessThumbDragGesture)
             }
         }
@@ -199,26 +205,26 @@ struct HSBColorPickerView: View {
                                       dy: translation.y - shared.hueBarSize/2 + 20)
                 
                 // ラジアンを取得
-                colorPickerState.radians = atan2(vector.dy - 20, vector.dx - 20)
+                colorState.colorDatas[colorState.selectedIndex].hsb.hueRadian = atan2(vector.dy - 20, vector.dx - 20)
 
                 //ラジアンから角度を求める
-                hueAngle = (colorPickerState.radians * 180) / .pi
+                hueAngle = (colorState.colorDatas[colorState.selectedIndex].hsb.hueRadian * 180) / .pi
                 
                 if hueAngle < 0 {
                     hueAngle = 360 + hueAngle
                 }
 
-                colorPickerState.hsbColor.hue = hueAngle / 360
+                colorState.colorDatas[colorState.selectedIndex].hsb.hue = hueAngle / 360
                 
-                if colorPickerState.hsbColor.hue < 1  {
-                    colorPickerState.hsbColor.hue = 1 - colorPickerState.hsbColor.hue
+                if colorState.colorDatas[colorState.selectedIndex].hsb.hue < 1  {
+                    colorState.colorDatas[colorState.selectedIndex].hsb.hue = 1 - colorState.colorDatas[colorState.selectedIndex].hsb.hue
                 }
                 
-                colorPickerState.HSBToRGB()
-                colorPickerState.RGBToHEX()
-                colors[selectedColorIndex] = Color(hue: colorPickerState.hsbColor.hue,
-                                  saturation: colorPickerState.hsbColor.saturation,
-                                  brightness: colorPickerState.hsbColor.brightness)
+                colorState.HSBToRGB()
+                colorState.RGBToHEX()
+//                 [selectedColorIndex] = Color(hue: colorState.hsbColor.hue,
+//                                  saturation: colorState.hsbColor.saturation,
+//                                  brightness: colorState.hsbColor.brightness)
             }
     }
     // サム
@@ -230,23 +236,23 @@ struct HSBColorPickerView: View {
                 let vector = CGVector(dx: translation.x, dy: translation.y)
                 
                 // ラジアンを取得
-                colorPickerState.radians = atan2(vector.dy - 20, vector.dx - 20)
+                colorState.colorDatas[colorState.selectedIndex].hsb.hueRadian = atan2(vector.dy - 20, vector.dx - 20)
                 
                 //ラジアンから角度を求める
-                hueAngle = (colorPickerState.radians * 180) / .pi
+                hueAngle = (colorState.colorDatas[colorState.selectedIndex].hsb.hueRadian * 180) / .pi
                 
                 if hueAngle < 0 {
                     hueAngle = 360 + hueAngle
                 }
                 
-                colorPickerState.hsbColor.hue = hueAngle / 360
+                colorState.colorDatas[colorState.selectedIndex].hsb.hue = hueAngle / 360
                 
-                if colorPickerState.hsbColor.hue < 1  {
-                    colorPickerState.hsbColor.hue = 1 - colorPickerState.hsbColor.hue
+                if colorState.colorDatas[colorState.selectedIndex].hsb.hue < 1  {
+                    colorState.colorDatas[colorState.selectedIndex].hsb.hue = 1 - colorState.colorDatas[colorState.selectedIndex].hsb.hue
                 }
                 
-                colorPickerState.HSBToRGB()
-                colorPickerState.RGBToHEX()
+                colorState.HSBToRGB()
+                colorState.RGBToHEX()
             }
     }
     
@@ -275,10 +281,10 @@ struct HSBColorPickerView: View {
                 let ratio = (value.location.x - offset) / shared.hueBarSize
                 let adjustedRatio = min(max(0, ratio), 1)
                 
-                colorPickerState.hsbColor[keyPath: property] = adjustedRatio
+                colorState.colorDatas[colorState.selectedIndex].hsb[keyPath: property] = adjustedRatio
                 
-                colorPickerState.HSBToRGB()
-                colorPickerState.RGBToHEX()
+                colorState.HSBToRGB()
+                colorState.RGBToHEX()
             }
     }
     
@@ -354,13 +360,15 @@ struct HSBColorPickerView: View {
 //
 //    // MARK: カラー変換
 //    func ColorConvert() {
-//        colorPickerState.HSBToRGB()
-//        colorPickerState.RGBToHEX()
+//        colorState.HSBToRGB()
+//        colorState.RGBToHEX()
 //    }
 }
 
 #Preview {
-//    @State var colorPickerState: ColorPickerViewState = .init()
-    ColorPickerView(colorPickerState: .init())
+    ColorPickerView(colorState: ColorPickerViewState(colorDatas: [
+        ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.5)),
+        ColorData(hsb: HSBColor(hue: 0.3, saturation: 0.5, brightness: 0.2))
+    ]))
         .environmentObject(GlobalSettings())
 }

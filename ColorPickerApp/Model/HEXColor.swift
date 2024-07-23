@@ -14,4 +14,14 @@ struct HEXColor: Codable, Hashable {
     init(code: String) {
         self.code = code
     }
+    
+    // MARK: HEX から HSB に変換
+    func toHSB() -> HSBColor {
+        return HSBColor(hue: 0, saturation: 0, brightness: 0)
+    }
+    
+    // MARK: HEX から RGB に変換
+    func toRGB() -> RGBColor {
+        return RGBColor(red: 0, green: 0, blue: 0)
+    }
 }

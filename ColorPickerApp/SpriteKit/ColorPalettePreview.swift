@@ -11,7 +11,7 @@ import SpriteKit
 class ColorPalettePreviewScene: SKScene {
     
     var shared: GlobalSettings
-    @Binding var colors: [Color]
+    @Binding var colorDatas: [ColorData]
     @Binding var isDrag: Bool
     @Binding var selectedColorIndex: Int
     
@@ -43,8 +43,8 @@ class ColorPalettePreviewScene: SKScene {
     // 削除判定
     var isColorDelete: Bool = false
     
-    init(shared: GlobalSettings, colors: Binding<[Color]>, isDrag: Binding<Bool>, selectedColorIndex: Binding<Int>) {
-        _colors = colors
+    init(shared: GlobalSettings, colorDatas: Binding<[ColorData]>, isDrag: Binding<Bool>, selectedColorIndex: Binding<Int>) {
+        _colorDatas = colorDatas
         _isDrag = isDrag
         _selectedColorIndex = selectedColorIndex
         
@@ -94,14 +94,14 @@ class ColorPalettePreviewScene: SKScene {
 
     func setupColorPreviewNode() {
         // カラープレビュー全体の幅
-        let rectFullWidth: CGFloat = rectWidth * CGFloat(colors.count)
+        let rectFullWidth: CGFloat = rectWidth * CGFloat(colorDatas.count)
         // 画面幅とカラープレビュー全体の幅の差を求める
         let differenceSize: CGFloat = shared.screenWidth - rectFullWidth
         // その差の半分をカラープレビュー分、分割するし、スペースが均等になるようにする（スペースは6つ必要なため、カラープレビュー数 + 1 している。）
-        let spaceSize: CGFloat = differenceSize / CGFloat(colors.count+1)
+        let spaceSize: CGFloat = differenceSize / CGFloat(colorDatas.count+1)
         
         // カラープレビュー
-        for (index, color) in colors.enumerated() {
+        for (index, colorData) in colorDatas.enumerated() {
 //            let node = SKSpriteNode(color: UIColor(color), size: CGSize(width: rectWidth, height: rectHeight))
 //            node.position = CGPoint(x: rectWidth * CGFloat(index) + (rectWidth / 2) + (spaceSize * CGFloat(index+1)),
 //                                    y: (shared.screenHeight - shared.screenHeight/1.05) + (rectHeight/2))
@@ -111,7 +111,7 @@ class ColorPalettePreviewScene: SKScene {
             let colorNode = SKShapeNode(path: colorNodePath.cgPath)
             colorNode.position = CGPoint(x: rectWidth * CGFloat(index) + (spaceSize * CGFloat(index+1)),
                                          y: (shared.screenHeight - shared.screenHeight/1.05))
-            colorNode.fillColor = UIColor(color)
+            colorNode.fillColor = UIColor(Color(hue: colorData.hsb.hue, saturation: colorData.hsb.saturation, brightness: colorData.hsb.brightness))
             colorNode.name = "colorNode"
             colorNode.zPosition = 1
 
@@ -128,7 +128,9 @@ class ColorPalettePreviewScene: SKScene {
         selectedColorNode = SKShapeNode(path: selectedColorNodePath.cgPath)
         selectedColorNode.position = CGPoint(x: colorNodes[selectedColorIndex].position.x - (rectWidth*1.3-rectWidth)/2,
                                              y: colorNodes[selectedColorIndex].position.y - (rectHeight*1.3-rectHeight)/2)
-        selectedColorNode.fillColor = UIColor(colors[selectedColorIndex].opacity(0.5))
+        selectedColorNode.fillColor = UIColor(Color(hue: colorDatas[selectedColorIndex].hsb.hue,
+                                                    saturation: colorDatas[selectedColorIndex].hsb.saturation,
+                                                    brightness: colorDatas[selectedColorIndex].hsb.brightness).opacity(0.5))
         selectedColorNode.zPosition = 0
         addChild(selectedColorNode)
     }
@@ -171,8 +173,12 @@ class ColorPalettePreviewScene: SKScene {
 //            colorNode.color = UIColor(colors[index])
 //        }
         
-        colorNodes[selectedColorIndex].fillColor = UIColor(colors[selectedColorIndex])
-        selectedColorNode.fillColor = UIColor(colors[selectedColorIndex].opacity(0.5))
+        colorNodes[selectedColorIndex].fillColor = UIColor(Color(hue: colorDatas[selectedColorIndex].hsb.hue,
+                                                                 saturation: colorDatas[selectedColorIndex].hsb.saturation,
+                                                                 brightness: colorDatas[selectedColorIndex].hsb.brightness))
+        selectedColorNode.fillColor = UIColor(Color(hue: colorDatas[selectedColorIndex].hsb.hue,
+                                                    saturation: colorDatas[selectedColorIndex].hsb.saturation,
+                                                    brightness: colorDatas[selectedColorIndex].hsb.brightness).opacity(0.5))
         
 //        // カラープレビュー再配置
 //        // カラープレビュー全体の幅
@@ -209,7 +215,11 @@ class ColorPalettePreviewScene: SKScene {
                     selectedColorNode.run(moveSequence)
                     
                     // 選択中のカラープレビューの色を変更
-                    let selectedColorAction = SKAction.colorize(with: UIColor(colors[selectedColorIndex].opacity(0.5)), colorBlendFactor: 1.0, duration: 0.2)
+                    let selectedColorAction = SKAction.colorize(with: UIColor(Color(hue: colorDatas[selectedColorIndex].hsb.hue,
+                                                                                    saturation: colorDatas[selectedColorIndex].hsb.saturation,
+                                                                                    brightness: colorDatas[selectedColorIndex].hsb.brightness).opacity(0.5)),
+                                                                colorBlendFactor: 1.0,
+                                                                duration: 0.2)
                     let selectedColorSequence = SKAction.sequence([selectedColorAction])
                     selectedColorNode.run(selectedColorSequence)
                 }
@@ -293,23 +303,23 @@ class ColorPalettePreviewScene: SKScene {
                     // カラー削除
                     for (index, colorNode) in colorNodes.enumerated() {
                         if node == colorNode {
-                            colors.remove(at: index)
+                            colorDatas.remove(at: index)
                             colorNodes.remove(at: index)
                             node.removeFromParent()
                             
-                            if selectedColorIndex == colors.count {
-                                selectedColorIndex = colors.count - 1
+                            if selectedColorIndex == colorDatas.count {
+                                selectedColorIndex = colorDatas.count - 1
                             }
                         }
                     }
                     
                     // カラープレビュー再配置
                     // カラープレビュー全体の幅
-                    let rectFullWidth: CGFloat = rectWidth * CGFloat(colors.count)
+                    let rectFullWidth: CGFloat = rectWidth * CGFloat(colorDatas.count)
                     // 画面幅とカラープレビュー全体の幅の差を求める
                     let differenceSize: CGFloat = shared.screenWidth - rectFullWidth
                     // その差の半分をカラープレビュー分、分割するし、スペースが均等になるようにする（スペースは6つ必要なため、カラープレビュー数 + 1 している。）
-                    let spaceSize: CGFloat = differenceSize / CGFloat(colors.count+1)
+                    let spaceSize: CGFloat = differenceSize / CGFloat(colorDatas.count+1)
                     // カラー再配置
                     for (index, colorNode) in colorNodes.enumerated() {
                         let colorNodeMoveAction = SKAction.move(to: CGPoint(x: rectWidth * CGFloat(index) + (spaceSize * CGFloat(index+1)),
@@ -327,7 +337,11 @@ class ColorPalettePreviewScene: SKScene {
                                     y: (shared.screenHeight - shared.screenHeight/1.05) - (rectWidth*1.3-rectWidth)/2),
                         duration: 0.2)
                     // 選択中のカラープレビューの色を変更
-                    let selectedColorAction = SKAction.colorize(with: UIColor(colors[selectedColorIndex].opacity(0.5)), colorBlendFactor: 1.0, duration: 0.2)
+                    let selectedColorAction = SKAction.colorize(with: UIColor(Color(hue: colorDatas[selectedColorIndex].hsb.hue,
+                                                                                    saturation: colorDatas[selectedColorIndex].hsb.saturation,
+                                                                                    brightness: colorDatas[selectedColorIndex].hsb.brightness).opacity(0.5)),
+                                                                colorBlendFactor: 1.0,
+                                                                duration: 0.2)
                     let selectedColorSequence = SKAction.sequence([selectedColorMoveAction, selectedColorAction])
                     selectedColorNode.run(selectedColorSequence)
                     

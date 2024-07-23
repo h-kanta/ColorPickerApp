@@ -9,50 +9,34 @@ import Foundation
 import SwiftUI
 
 class ColorPickerViewState: ObservableObject {
-    @Published var hsbColor: HSBColor
-    @Published var rgbColor: RGBColor
-    @Published var hexColor: HEXColor
-    @Published var radians: Double
-    @Published var isDragging: Bool
-    
-    // カラー情報をどのようにもつか、
-    // SwiftData とどのように連携するかを考える
+    @Published var colorDatas: [ColorData]
+//    @Published var radians: Double
+    @Published var selectedIndex: Int
+    //@Published var isDragging: Bool
     
     @EnvironmentObject private var shared: GlobalSettings
     
-    init() {
-        hsbColor = HSBColor(hue: 0, saturation: 1.0, brightness: 1.0)
-        rgbColor = RGBColor(red: 0, green: 0, blue: 0)
-        hexColor = HEXColor(code: "000000")
-        radians = 0
-        isDragging = false
+    init(colorDatas: [ColorData]) {
+        self.colorDatas = colorDatas
+        self.selectedIndex = 0
+        //self.isDragging = false
     }
     
     // MARK: コンバート
     // HSB から RGB に変換
     func HSBToRGB() {
-         rgbColor = hsbColor.ToRGB()
+        colorDatas[selectedIndex].rgb = colorDatas[selectedIndex].hsb.toRGB()
     }
     
     // RGB から HSB に変換
     func RGBToHSB() {
         // HSBを取得
-        hsbColor = rgbColor.ToHSB()
-        // 色相を0~360の範囲にし、範囲の角度を反対にする
-        var angleRad = (360 - (hsbColor.hue * 360)).truncatingRemainder(dividingBy: 360)
-                
-        // マイナスの場合は 360 足して調整
-        if angleRad < 0 {
-            angleRad += 360
-        }
-        
-        // 角度からラジアンに変換
-        radians = (angleRad * .pi) / 180
+        colorDatas[selectedIndex].hsb = colorDatas[selectedIndex].rgb.toHSB()
     }
     
     // RGB から HEX に変換
     func RGBToHEX() {
-        hexColor = rgbColor.ToHEX()
+        colorDatas[selectedIndex].hex = colorDatas[selectedIndex].rgb.toHEX()
     }
     
     // 数値から % に変換

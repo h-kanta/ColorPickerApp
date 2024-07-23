@@ -36,7 +36,7 @@ extension Icon {
         case .copy:
             return "doc.on.doc"
         case .plus:
-            return "plus"
+            return "plus.circle"
         case .minus:
             return "minus"
         case .trash:

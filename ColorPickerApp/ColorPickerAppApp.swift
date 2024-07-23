@@ -25,9 +25,11 @@ struct ColorPickerAppApp: App {
 //    }()
 
     var body: some Scene {
+        
         WindowGroup {
             ContentView()
                 .environmentObject(GlobalSettings())
+                .modelContainer(for: ColorPalette.self)
         }
         //.modelContainer(sharedModelContainer)
     }

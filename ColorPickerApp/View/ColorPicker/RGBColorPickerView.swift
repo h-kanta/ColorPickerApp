@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RGBColorPickerView: View {
     
-    @ObservedObject var colorPickerState: ColorPickerViewState
+    @ObservedObject var colorState: ColorPickerViewState
     
     @EnvironmentObject private var shared: GlobalSettings
     
@@ -26,9 +26,10 @@ struct RGBColorPickerView: View {
             // MARK: プレビュー
             Rectangle()
                 .frame(width: shared.hueBarSize * 0.3, height: shared.hueBarSize * 0.3)
-                .foregroundStyle(Color(hue: colorPickerState.hsbColor.hue,
-                                       saturation: colorPickerState.hsbColor.saturation,
-                                       brightness: colorPickerState.hsbColor.brightness))
+                .foregroundStyle(Color(
+                    hue: colorState.colorDatas[colorState.selectedIndex].hsb.hue,
+                    saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
+                    brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness))
                 .cornerRadius(10)
                 .shadow(color: Color("Shadow2").opacity(0.23), radius: 1, x: 4, y: 4)
                 .padding(shared.hueBarSize * 0.03)
@@ -60,15 +61,14 @@ struct RGBColorPickerView: View {
                     .frame(width: shared.screenWidth * 0.2)
                     .multilineTextAlignment(.center)
                     .onChange(of: redByteScaleValue) {
-                        if !colorPickerState.isDragging {
-                            //redByteScaleValue = redByteScaleValue > 255 ? 255 : redByteScaleValue
-                            colorPickerState.rgbColor.red = Double(redByteScaleValue) / 255
-                        }
+//                        if !colorState.isDragging {
+//                            //redByteScaleValue = redByteScaleValue > 255 ? 255 : redByteScaleValue
+//                            colorState.colorDatas[colorState.selectedIndex].rgb.red = Double(redByteScaleValue) / 255
+//                        }
                     }
                 // コピーボタン
                 Button {
                     UIPasteboard.general.string = redByteScaleValue.description
-                    print(colorPickerState.rgbColor.red.description)
                 } label: {
                     Image(systemName: Icon.copy.symbolName())
                         .font(.title3)
@@ -84,8 +84,8 @@ struct RGBColorPickerView: View {
                 RoundedRectangle(cornerRadius: 10)
                     .fill(LinearGradient(gradient: Gradient(colors: (0...10).map {
                         Color(red: Double($0) * 0.1,
-                              green: colorPickerState.rgbColor.green,
-                              blue: colorPickerState.rgbColor.blue)
+                              green: colorState.colorDatas[colorState.selectedIndex].rgb.green,
+                              blue: colorState.colorDatas[colorState.selectedIndex].rgb.blue)
                     }), startPoint: .leading, endPoint: .trailing))
                     .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.02)
                     .gesture(redBarDragGesture)
@@ -101,8 +101,8 @@ struct RGBColorPickerView: View {
                         .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
                 }
                 .frame(width: 32, height: 32)
-                .offset(x: colorPickerState.rgbColor.red * shared.hueBarSize)
-                .animation(.spring, value: colorPickerState.rgbColor.red)
+                .offset(x: colorState.colorDatas[colorState.selectedIndex].rgb.red * shared.hueBarSize)
+                .animation(.spring, value: colorState.colorDatas[colorState.selectedIndex].rgb.red)
                 .gesture(redThumbDragGesture)
             }
         }
@@ -128,7 +128,6 @@ struct RGBColorPickerView: View {
                 // コピーボタン
                 Button {
                     UIPasteboard.general.string = greenByteScaleValue.description
-                    print(colorPickerState.rgbColor.green.description)
                 } label: {
                     Image(systemName: Icon.copy.symbolName())
                         .font(.title3)
@@ -143,9 +142,9 @@ struct RGBColorPickerView: View {
                 // バー
                 RoundedRectangle(cornerRadius: 10)
                     .fill(LinearGradient(gradient: Gradient(colors: (0...10).map {
-                        Color(red: colorPickerState.rgbColor.red,
+                        Color(red: colorState.colorDatas[colorState.selectedIndex].rgb.red,
                               green: Double($0) * 0.1,
-                              blue: colorPickerState.rgbColor.blue)
+                              blue: colorState.colorDatas[colorState.selectedIndex].rgb.blue)
                     }), startPoint: .leading, endPoint: .trailing))
                     .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.02)
                     .gesture(greenBarDragGesture)
@@ -161,8 +160,8 @@ struct RGBColorPickerView: View {
                         .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
                 }
                 .frame(width: 32, height: 32)
-                .offset(x: colorPickerState.rgbColor.green * shared.hueBarSize)
-                .animation(.spring, value: colorPickerState.rgbColor.green)
+                .offset(x: colorState.colorDatas[colorState.selectedIndex].rgb.green * shared.hueBarSize)
+                .animation(.spring, value: colorState.colorDatas[colorState.selectedIndex].rgb.green)
                 .gesture(greenThumbDragGesture)
             }
         }
@@ -203,8 +202,8 @@ struct RGBColorPickerView: View {
                 // バー
                 RoundedRectangle(cornerRadius: 10)
                     .fill(LinearGradient(gradient: Gradient(colors: (0...10).map {
-                        Color(red: colorPickerState.rgbColor.red,
-                              green: colorPickerState.rgbColor.green,
+                        Color(red: colorState.colorDatas[colorState.selectedIndex].rgb.red,
+                              green: colorState.colorDatas[colorState.selectedIndex].rgb.green,
                               blue: Double($0) * 0.1)
                     }), startPoint: .leading, endPoint: .trailing))
                     .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.02)
@@ -221,8 +220,8 @@ struct RGBColorPickerView: View {
                         .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
                 }
                 .frame(width: 32, height: 32)
-                .offset(x: colorPickerState.rgbColor.blue * shared.hueBarSize)
-                .animation(.spring, value: colorPickerState.rgbColor.blue)
+                .offset(x: colorState.colorDatas[colorState.selectedIndex].rgb.blue * shared.hueBarSize)
+                .animation(.spring, value: colorState.colorDatas[colorState.selectedIndex].rgb.blue)
                 .gesture(blueThumbDragGesture)
             }
         }
@@ -263,19 +262,19 @@ struct RGBColorPickerView: View {
                 let ratio = (value.location.x - offset) / shared.hueBarSize
                 let adjustedRatio = min(max(0, ratio), 1)
                 
-                colorPickerState.rgbColor[keyPath: property] = adjustedRatio
+                colorState.colorDatas[colorState.selectedIndex].rgb[keyPath: property] = adjustedRatio
                 
-                colorPickerState.RGBToHSB()
-                colorPickerState.RGBToHEX()
+                colorState.RGBToHSB()
+                colorState.RGBToHEX()
                 RGBConvertToByteScale()
             }
     }
     
     // MARK: RGBの値の範囲を 「0.0~1.0」から「0~255」に変換
     func RGBConvertToByteScale() {
-        redByteScaleValue = Int(colorPickerState.rgbColor.red * 255)
-        greenByteScaleValue = Int(colorPickerState.rgbColor.green * 255)
-        blueByteScaleValue = Int(colorPickerState.rgbColor.blue * 255)
+        redByteScaleValue = Int(colorState.colorDatas[colorState.selectedIndex].rgb.red * 255)
+        greenByteScaleValue = Int(colorState.colorDatas[colorState.selectedIndex].rgb.green * 255)
+        blueByteScaleValue = Int(colorState.colorDatas[colorState.selectedIndex].rgb.blue * 255)
     }
     
     // MARK: カラー変換
@@ -287,7 +286,9 @@ struct RGBColorPickerView: View {
 }
 
 #Preview {
-//    @State var colorPickerState: ColorPickerViewState = .init()
-    ColorPickerView(colorPickerState: .init())
+    ColorPickerView(colorState: ColorPickerViewState(colorDatas: [
+        ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.5)),
+        ColorData(hsb: HSBColor(hue: 0.3, saturation: 0.5, brightness: 0.2))
+    ]))
         .environmentObject(GlobalSettings())
 }
