@@ -20,7 +20,7 @@ struct ContentView: View {
     @State var showColorPickerView: Bool = false
     
     init() {
-//        UITabBar.appearance().isHidden = true
+        UITabBar.appearance().isHidden = true
         // TabBarAppearanceの設定
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -35,8 +35,6 @@ struct ContentView: View {
         if #available(iOS 15.0, *) {
             UITabBar.appearance().scrollEdgeAppearance = appearance
         }
-        
-        //@StateObject var colorPickerState: ColorPickerViewState = .init()
     }
     
     var body: some View {
@@ -51,37 +49,22 @@ struct ContentView: View {
             TabView(selection: $currentTab) {
                 HomeView()
                     .tag(Tab.home)
-                
                 ColorPaletteView()
                     .tag(Tab.palette)
-                
-//                Text("パレット作成")
-//                    .tag(Tab.paletteCreate)
-                
                 StorageColorView()
                     .tag(Tab.favoriteColor)
-                
                 OptionView()
                     .tag(Tab.option)
             }
-//            .background(GeometryReader { geometry in
-//                Color.clear.onAppear {
-//                    print("TabView height: \(geometry.size.height)")
-//                }
-//            })
             
             CustomTabBar(currentTab: $currentTab, showColorPicker: $showColorPickerView)
+                .frame(maxHeight: .infinity, alignment: .bottom)
         }
-//        .ignoresSafeArea()
         .fullScreenCover(isPresented: $showColorPickerView) {
             // ここに全画面で表示するモーダルの内容を配置
             ColorPickerView(colorState: colorState)
                 .environmentObject(GlobalSettings())
         }
-        .onAppear {
-            print(colorState)
-        }
-        
     }
     
 }
