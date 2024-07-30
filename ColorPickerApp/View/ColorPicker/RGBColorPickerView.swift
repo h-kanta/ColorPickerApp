@@ -37,6 +37,7 @@ struct RGBColorPickerView: View {
             } else {
                 // MARK: カラー
                 Button {
+                    // 追加
                     colorState.colorDatas.append(ColorData(hsb: HSBColor(
                         hue: colorState.colorDatas[colorState.selectedIndex].hsb.hue,
                         saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
@@ -115,7 +116,7 @@ struct RGBColorPickerView: View {
                               green: colorState.colorDatas[colorState.selectedIndex].rgb.green,
                               blue: colorState.colorDatas[colorState.selectedIndex].rgb.blue)
                     }), startPoint: .leading, endPoint: .trailing))
-                    .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.02)
+                    .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.03)
                     .gesture(redBarDragGesture)
                     .padding(.horizontal)
                 
@@ -128,7 +129,7 @@ struct RGBColorPickerView: View {
                         .stroke(.black.opacity(0.3), lineWidth: 1)
                         .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
                 }
-                .frame(width: 32, height: 32)
+                .frame(width: shared.screenHeight * 0.05, height: shared.screenHeight * 0.05)
                 .offset(x: colorState.colorDatas[colorState.selectedIndex].rgb.red * shared.hueBarSize)
                 .animation(.spring, value: colorState.colorDatas[colorState.selectedIndex].rgb.red)
                 .gesture(redThumbDragGesture)
@@ -174,7 +175,7 @@ struct RGBColorPickerView: View {
                               green: Double($0) * 0.1,
                               blue: colorState.colorDatas[colorState.selectedIndex].rgb.blue)
                     }), startPoint: .leading, endPoint: .trailing))
-                    .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.02)
+                    .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.03)
                     .gesture(greenBarDragGesture)
                     .padding(.horizontal)
                 
@@ -187,7 +188,7 @@ struct RGBColorPickerView: View {
                         .stroke(.black.opacity(0.3), lineWidth: 1)
                         .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
                 }
-                .frame(width: 32, height: 32)
+                .frame(width: shared.screenHeight * 0.05, height: shared.screenHeight * 0.05)
                 .offset(x: colorState.colorDatas[colorState.selectedIndex].rgb.green * shared.hueBarSize)
                 .animation(.spring, value: colorState.colorDatas[colorState.selectedIndex].rgb.green)
                 .gesture(greenThumbDragGesture)
@@ -234,7 +235,7 @@ struct RGBColorPickerView: View {
                               green: colorState.colorDatas[colorState.selectedIndex].rgb.green,
                               blue: Double($0) * 0.1)
                     }), startPoint: .leading, endPoint: .trailing))
-                    .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.02)
+                    .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.03)
                     .gesture(blueBarDragGesture)
                     .padding(.horizontal)
                 
@@ -247,7 +248,7 @@ struct RGBColorPickerView: View {
                         .stroke(.black.opacity(0.3), lineWidth: 1)
                         .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
                 }
-                .frame(width: 32, height: 32)
+                .frame(width: shared.screenHeight * 0.05, height: shared.screenHeight * 0.05)
                 .offset(x: colorState.colorDatas[colorState.selectedIndex].rgb.blue * shared.hueBarSize)
                 .animation(.spring, value: colorState.colorDatas[colorState.selectedIndex].rgb.blue)
                 .gesture(blueThumbDragGesture)

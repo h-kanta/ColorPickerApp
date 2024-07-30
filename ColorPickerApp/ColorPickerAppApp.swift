@@ -29,7 +29,7 @@ struct ColorPickerAppApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(GlobalSettings())
-                .modelContainer(for: ColorPalette.self)
+                .modelContainer(for: [ColorPalette.self, ColorStorage.self])
         }
         //.modelContainer(sharedModelContainer)
     }

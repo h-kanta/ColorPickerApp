@@ -9,13 +9,13 @@ import Foundation
 import SwiftData
 
 @Model
-final class StorageColor {
-    var hexCodes: [HEXColor]
+final class ColorStorage {
+    var rgbColor: RGBColor
     var createdAt: Date
     var updatedAt: Date
     
-    init(hexCodes: [HEXColor]) {
-        self.hexCodes = hexCodes
+    init(rgbColor: RGBColor) {
+        self.rgbColor = rgbColor
         self.createdAt = Date()
         self.updatedAt = Date()
     }

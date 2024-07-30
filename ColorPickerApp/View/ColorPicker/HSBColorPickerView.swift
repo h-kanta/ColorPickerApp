@@ -26,19 +26,41 @@ struct HSBColorPickerView: View {
                 Circle()
                     .stroke(
                         AngularGradient(gradient: Gradient(colors: [
-                            Color(hue: 1.0, saturation: 1.0, brightness: 1.0),
-                            Color(hue: 0.9, saturation: 1.0, brightness: 1.0),
-                            Color(hue: 0.8, saturation: 1.0, brightness: 1.0),
-                            Color(hue: 0.7, saturation: 1.0, brightness: 1.0),
-                            Color(hue: 0.6, saturation: 1.0, brightness: 1.0),
-                            Color(hue: 0.5, saturation: 1.0, brightness: 1.0),
-                            Color(hue: 0.4, saturation: 1.0, brightness: 1.0),
-                            Color(hue: 0.3, saturation: 1.0, brightness: 1.0),
-                            Color(hue: 0.2, saturation: 1.0, brightness: 1.0),
-                            Color(hue: 0.1, saturation: 1.0, brightness: 1.0),
-                            Color(hue: 0.0, saturation: 1.0, brightness: 1.0),
+                            Color(hue: 1.0,
+                                  saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
+                                  brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness),
+                            Color(hue: 0.9,
+                                  saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
+                                  brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness),
+                            Color(hue: 0.8,
+                                  saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
+                                  brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness),
+                            Color(hue: 0.7,
+                                  saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
+                                  brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness),
+                            Color(hue: 0.6,
+                                  saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
+                                  brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness),
+                            Color(hue: 0.5,
+                                  saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
+                                  brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness),
+                            Color(hue: 0.4,
+                                  saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
+                                  brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness),
+                            Color(hue: 0.3,
+                                  saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
+                                  brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness),
+                            Color(hue: 0.2,
+                                  saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
+                                  brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness),
+                            Color(hue: 0.1,
+                                  saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
+                                  brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness),
+                            Color(hue: 0.0,
+                                  saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
+                                  brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness),
                         ]), center: .center)
-                        , lineWidth: 16)
+                        , lineWidth: 20)
                     .frame(width: shared.hueBarSize, height: shared.hueBarSize)
                     .shadow(color: Color("Shadow1"), radius: 5, x: 5, y: 5)
                     .shadow(color: Color("Shadow1"), radius: 5, x: -5, y: -5)
@@ -73,6 +95,7 @@ struct HSBColorPickerView: View {
                     } else {
                         // MARK: カラー
                         Button {
+                            // 追加
                             colorState.colorDatas.append(ColorData(hsb: HSBColor(
                                 hue: colorState.colorDatas[colorState.selectedIndex].hsb.hue,
                                 saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
@@ -155,7 +178,7 @@ struct HSBColorPickerView: View {
                               saturation: Double($0) * 0.1,
                             brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness)
                     }), startPoint: .leading, endPoint: .trailing))
-                    .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.02)
+                    .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.03)
                     .gesture(saturationBarDragGesture)
                     .padding(.horizontal)
                 
@@ -168,7 +191,7 @@ struct HSBColorPickerView: View {
                         .stroke(.black.opacity(0.3), lineWidth: 1)
                         .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
                 }
-                .frame(width: 32, height: 32)
+                .frame(width: shared.screenHeight * 0.05, height: shared.screenHeight * 0.05)
                 .offset(x: colorState.colorDatas[colorState.selectedIndex].hsb.saturation * shared.hueBarSize)
                 .animation(.spring, value: colorState.colorDatas[colorState.selectedIndex].hsb.saturation)
                 .gesture(saturationThumbDragGesture)
@@ -198,7 +221,7 @@ struct HSBColorPickerView: View {
                                                      brightness: Double($0) * 0.1)}),
                                          startPoint: .leading,
                                          endPoint: .trailing))
-                    .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.02)
+                    .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.03)
                     .gesture(brightnessBarDragGesture)
                     .padding(.horizontal)
                 
@@ -211,7 +234,7 @@ struct HSBColorPickerView: View {
                         .stroke(.black.opacity(0.3), lineWidth: 1)
                         .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
                 }
-                .frame(width: 32, height: 32)
+                .frame(width: shared.screenHeight * 0.05, height: shared.screenHeight * 0.05)
                 .offset(
                     x: colorState.colorDatas[colorState.selectedIndex].hsb.brightness * shared.hueBarSize)
                 .animation(.spring,

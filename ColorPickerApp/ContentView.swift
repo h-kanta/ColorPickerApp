@@ -9,11 +9,13 @@ import SwiftUI
 
 
 struct ContentView: View {
+    // グローバル変数
+    @EnvironmentObject private var shared: GlobalSettings
     
     // カラーデータ
     @StateObject var colorState: ColorPickerViewState = .init(colorDatas: [
-        ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.5)),
-        ColorData(hsb: HSBColor(hue: 0.3, saturation: 0.5, brightness: 0.2))
+        ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.7)),
+        ColorData(hsb: HSBColor(hue: 0.9, saturation: 0.5, brightness: 0.7))
     ])
     
     @State var currentTab: Tab = .home
@@ -51,13 +53,15 @@ struct ContentView: View {
                     .tag(Tab.home)
                 ColorPaletteView()
                     .tag(Tab.palette)
-                StorageColorView()
+                    .padding(.bottom, shared.screenHeight / 10)
+                ColorStorageView()
                     .tag(Tab.favoriteColor)
                 OptionView()
                     .tag(Tab.option)
             }
             
             CustomTabBar(currentTab: $currentTab, showColorPicker: $showColorPickerView)
+                .environmentObject(GlobalSettings())
                 .frame(maxHeight: .infinity, alignment: .bottom)
         }
         .fullScreenCover(isPresented: $showColorPickerView) {
@@ -71,4 +75,6 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(GlobalSettings())
+        .modelContainer(for: [ColorPalette.self, ColorStorage.self])
 }

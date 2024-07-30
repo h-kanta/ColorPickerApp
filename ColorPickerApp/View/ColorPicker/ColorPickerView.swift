@@ -10,6 +10,10 @@ import SpriteKit
 
 struct ColorPickerView: View {
     @Environment(\.dismiss) var dismiss
+    // バックグランド移ったときやフォアグラウンドに戻ったときを検知
+    @Environment(\.scenePhase) private var scenePhase
+    // SwiftData用
+    @Environment(\.modelContext) private var context
     
     // カラーデータ
     @ObservedObject var colorState: ColorPickerViewState
@@ -23,6 +27,8 @@ struct ColorPickerView: View {
     
     // カラープレビューをドラッグしたかどうか
     @State var isDragColor: Bool = false
+    // バックグラウンド状態かどうか
+    @State var isBackground: Bool = false
     
     // SpriteKit の SKScene を用意
     var scene: SKScene {
@@ -30,7 +36,8 @@ struct ColorPickerView: View {
         let scene = ColorPalettePreviewScene(shared: shared,
                                              colorDatas: $colorState.colorDatas,
                                              isDrag: $isDragColor,
-                                             selectedColorIndex: $colorState.selectedIndex)
+                                             selectedColorIndex: $colorState.selectedIndex,
+                                             isBackground: $isBackground)
         // シーンが View の　frame サイズいっぱいに表示されるようにリサイズ
         scene.scaleMode = .resizeFill
         return scene
@@ -58,7 +65,10 @@ struct ColorPickerView: View {
                     },
                     rightContent: {
                         Button {
+                            // カラーパレットに追加
+                            context.insert(ColorPalette(colorDates: colorState.colorDatas))
                             
+                            dismiss()
                         } label: {
                             Text("作成")
                         }
@@ -83,6 +93,13 @@ struct ColorPickerView: View {
                 .frame(width: shared.hueBarSize)
                 
                 Spacer()
+            }
+        }
+        .onChange(of: scenePhase) {
+            if scenePhase == .background {
+                isBackground = true
+            } else {
+                isBackground = false
             }
         }
     }
@@ -119,8 +136,8 @@ struct ColorPickerView: View {
 
 #Preview {
     ColorPickerView(colorState: ColorPickerViewState(colorDatas: [
-        ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.5)),
-        ColorData(hsb: HSBColor(hue: 0.3, saturation: 0.5, brightness: 0.2))
+        ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.7)),
+        ColorData(hsb: HSBColor(hue: 0.9, saturation: 0.5, brightness: 0.7))
     ]))
         .environmentObject(GlobalSettings())
 }

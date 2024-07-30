@@ -9,15 +9,24 @@ import Foundation
 
 // MARK: アイコン
 enum Icon: CaseIterable {
+    // 戻る
     case back
+    // 並び替え
     case sort
+    // メニュー
     case menu
+    // 閉じる
     case close
+    // お気に入り
     case favorite
+    // コピー
     case copy
+    // 追加
     case plus
-    case minus
+    // ゴミ箱
     case trash
+    // ストレージカラー追加
+    case addStorageColor
 }
 
 extension Icon {
@@ -37,10 +46,10 @@ extension Icon {
             return "doc.on.doc"
         case .plus:
             return "plus.circle"
-        case .minus:
-            return "minus"
         case .trash:
             return "trash"
+        case .addStorageColor:
+            return "plus.square.fill.on.square.fill"
         }
     }
 }

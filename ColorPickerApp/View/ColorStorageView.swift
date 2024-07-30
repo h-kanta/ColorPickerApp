@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
-struct StorageColorView: View {
+struct ColorStorageView: View {
     
-    // ColorPalette のデータを取得するために宣言
-    @Query private var colorPalettes: []
+    // ColorStorage のデータを取得するために宣言
+    @Query private var colorStorages: [ColorStorage]
     
     let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 4)
     
@@ -42,8 +43,8 @@ struct StorageColorView: View {
                     GeometryReader { geometry in
                         ScrollView {
                             LazyVGrid(columns: columns, spacing: 20) {
-                                ForEach((0...20), id: \.self) { _ in
-                                    colorGridItem(hexCode: "#FFFFFF", geometry: geometry)
+                                ForEach(colorStorages, id: \.self) { color in
+                                    colorGridItem(rgbColor: color.rgbColor, geometry: geometry)
                                 }
                             }
                             .padding()
@@ -57,23 +58,23 @@ struct StorageColorView: View {
     }
     
     //
-    func colorGridItem(hexCode: String, geometry: GeometryProxy) -> some View {
+    func colorGridItem(rgbColor: RGBColor, geometry: GeometryProxy) -> some View {
         VStack {
             // カラー
             Rectangle()
                 .frame(width: (geometry.size.width - 60) / 4,
                        height: (geometry.size.width - 60) / 4) // 60は各アイテムの間隔を考慮
-                .foregroundStyle(.mint)
+                .foregroundStyle(Color(red: rgbColor.red, green: rgbColor.green, blue: rgbColor.blue))
                 .cornerRadius(10, corners: .allCorners)
                 .shadow(color: Color("Shadow1"), radius: 3, x: -5, y: -5)
                 .shadow(color: Color("Shadow2").opacity(0.23), radius: 3, x: 5, y: 5)
             
             // HEXコード
-            Text(hexCode)
+            Text("#\(rgbColor.toHEX().code)")
         }
     }
 }
 
 #Preview {
-    StorageColorView()
+    ColorStorageView()
 }

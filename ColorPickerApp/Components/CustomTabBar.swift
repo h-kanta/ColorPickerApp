@@ -47,7 +47,6 @@ struct CustomTabBar: View {
             }
         }
         .frame(height: shared.screenHeight / 10)
-        //.background(.red)
     }
 }
 

@@ -27,6 +27,6 @@ struct ColorData: Codable, Hashable {
     init(hex: HEXColor, hsb: HSBColor? = nil, rgb: RGBColor? = nil) {
         self.hex = hex
         self.rgb = rgb ?? hex.toRGB() // HEXからRGBへ変換
-        self.hsb = hsb ?? hex.toHSB() // HEXからHSBへ変換
+        self.hsb = hsb ?? self.rgb.toHSB() // RGBからHEXへ変換（HSBからは変換できないためRGBを挟んで変換）
     }
 }
