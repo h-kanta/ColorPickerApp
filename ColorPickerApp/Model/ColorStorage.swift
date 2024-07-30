@@ -10,12 +10,12 @@ import SwiftData
 
 @Model
 final class StorageColor {
-    var hexCode: String
+    var hexCodes: [HEXColor]
     var createdAt: Date
     var updatedAt: Date
     
-    init(hexCode: String) {
-        self.hexCode = hexCode
+    init(hexCodes: [HEXColor]) {
+        self.hexCodes = hexCodes
         self.createdAt = Date()
         self.updatedAt = Date()
     }

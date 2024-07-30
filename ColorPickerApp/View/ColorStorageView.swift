@@ -9,15 +9,14 @@ import SwiftUI
 
 struct StorageColorView: View {
     
+    // ColorPalette のデータを取得するために宣言
+    @Query private var colorPalettes: []
+    
     let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 4)
     
     var body: some View {
         NavigationStack {
             ZStack {
-                // 背景色
-//                Color("BackColor")
-//                    .ignoresSafeArea()
-                
                 VStack {
                     // MARK: ナビゲーションバー
                     CustomNavigationBarContainer(
