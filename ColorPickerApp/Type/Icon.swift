@@ -45,7 +45,7 @@ extension Icon {
         case .copy:
             return "doc.on.doc"
         case .plus:
-            return "plus.circle"
+            return "plus"
         case .trash:
             return "trash"
         case .addStorageColor:

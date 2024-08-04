@@ -81,43 +81,27 @@ struct HSBColorPickerView: View {
                                value: colorState.colorDatas[colorState.selectedIndex].hsb.hue)
                     .gesture(hueThumbDragGesture)
                 
-                VStack {
-                    if colorState.colorDatas.count == 5 {
-                        Rectangle()
-                            .frame(width: shared.hueBarSize * 0.3, height: shared.hueBarSize * 0.3)
-                            .foregroundStyle(Color(
-                                hue: colorState.colorDatas[colorState.selectedIndex].hsb.hue,
-                                saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
-                                brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness))
-                            .cornerRadius(10)
-                            .shadow(color: Color("Shadow2").opacity(0.23), radius: 1, x: 4, y: 4)
-                            .padding(8)
-                    } else {
-                        // MARK: カラー
-                        Button {
-                            // 追加
-                            colorState.colorDatas.append(ColorData(hsb: HSBColor(
-                                hue: colorState.colorDatas[colorState.selectedIndex].hsb.hue,
-                                saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
-                                brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness)))
-                        } label: {
-                            ZStack {
-                                Rectangle()
-                                    .frame(width: shared.hueBarSize * 0.3, height: shared.hueBarSize * 0.3)
-                                    .foregroundStyle(Color(
-                                        hue: colorState.colorDatas[colorState.selectedIndex].hsb.hue,
-                                        saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
-                                        brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness))
-                                    .cornerRadius(10)
-                                    .shadow(color: Color("Shadow2").opacity(0.23), radius: 1, x: 4, y: 4)
-                                    .padding(8)
-                                
-                                Image(systemName: Icon.plus.symbolName())
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .foregroundStyle(.white)
-                                
-                            }
+                VStack(spacing: 8) {
+                    // MARK: カラー
+                    Button {
+                        
+                    } label: {
+                        ZStack {
+                            Circle()
+                                .frame(width: shared.hueBarSize * 0.3, height: shared.hueBarSize * 0.3)
+                                .foregroundStyle(Color(
+                                    hue: colorState.colorDatas[colorState.selectedIndex].hsb.hue,
+                                    saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
+                                    brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness))
+                                .cornerRadius(10)
+                                .shadow(color: Color("Shadow2").opacity(0.23), radius: 1, x: 4, y: 4)
+                                .padding(8)
+                            
+                            Image(systemName: Icon.menu.symbolName())
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundStyle(.white)
+                            
                         }
                     }
                     

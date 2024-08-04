@@ -61,7 +61,7 @@ struct ColorStorageView: View {
     func colorGridItem(rgbColor: RGBColor, geometry: GeometryProxy) -> some View {
         VStack {
             // カラー
-            Rectangle()
+            Circle()
                 .frame(width: (geometry.size.width - 60) / 4,
                        height: (geometry.size.width - 60) / 4) // 60は各アイテムの間隔を考慮
                 .foregroundStyle(Color(red: rgbColor.red, green: rgbColor.green, blue: rgbColor.blue))
