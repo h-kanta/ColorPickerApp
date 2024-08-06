@@ -40,7 +40,7 @@ struct ColorPaletteView: View {
                     )
                     
                     ScrollView {
-                        VStack(spacing: 40) {
+                        VStack(spacing: 30) {
                             ForEach(colorPalettes) { colorPalette in
                                 colorPaletteCardView(colorPalete: colorPalette)
                             }
@@ -53,6 +53,7 @@ struct ColorPaletteView: View {
     }
     
     // MARK: カラーパレットカード
+    @ViewBuilder
     func colorPaletteCardView(colorPalete: ColorPalette) -> some View {
         ZStack {
             Rectangle()
@@ -83,34 +84,38 @@ struct ColorPaletteView: View {
                 .padding()
                 
                 // MARK: カラー
-                HStack(spacing: 0) {
-                    ForEach(colorPalete.colorDates, id: \.self) { color in
-                        // 最初のカラーは、左下が角丸
-                        if color == colorPalete.colorDates.first {
-                            Rectangle()
-                                .foregroundStyle(Color(hue: color.hsb.hue,
-                                                       saturation: color.hsb.saturation,
-                                                       brightness: color.hsb.brightness))
-                                .cornerRadius(10, corners: .bottomLeft)
-                        // 最後のカラーは、右下が角丸
-                        } else if color == colorPalete.colorDates.last {
-                            Rectangle()
-                                .foregroundStyle(Color(hue: color.hsb.hue,
-                                                       saturation: color.hsb.saturation,
-                                                       brightness: color.hsb.brightness))
-                                .cornerRadius(10, corners: .bottomRight)
-                        // その他は、角丸なし
-                        } else {
-                            Rectangle()
-                                .foregroundStyle(Color(hue: color.hsb.hue,
-                                                       saturation: color.hsb.saturation,
-                                                       brightness: color.hsb.brightness))
+                GeometryReader { geometry in
+                    HStack(spacing: 0) {
+                        ForEach(colorPalete.colorDatas.indices, id: \.self) { index in
+                            let color = colorPalete.colorDatas[index]
+                            
+                            if index == 0 {
+                                Rectangle()
+                                    .fill(Color(hue: color.hsb.hue,
+                                                saturation: color.hsb.saturation,
+                                                brightness: color.hsb.brightness))
+                                    .frame(width: geometry.size.width * 0.3)
+                                    .cornerRadius(10, corners: [.bottomLeft])
+                            } else if index == 1 {
+                                Rectangle()
+                                    .fill(Color(hue: color.hsb.hue,
+                                                saturation: color.hsb.saturation,
+                                                brightness: color.hsb.brightness))
+                                    .frame(width: geometry.size.width * 0.1)
+                            } else {
+                                Rectangle()
+                                    .fill(Color(hue: color.hsb.hue,
+                                                saturation: color.hsb.saturation,
+                                                brightness: color.hsb.brightness))
+                                    .frame(width: geometry.size.width * 0.6)
+                                    .cornerRadius(10, corners: [.bottomRight])
+                            }
                         }
                     }
                 }
             }
         }
-        .frame(height: 160)
+        .frame(height: 130)
     }
 }
 

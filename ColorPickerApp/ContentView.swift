@@ -15,7 +15,8 @@ struct ContentView: View {
     // カラーデータ
     @StateObject var colorState: ColorPickerViewState = .init(colorDatas: [
         ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.7)),
-        ColorData(hsb: HSBColor(hue: 0.9, saturation: 0.5, brightness: 0.7))
+        ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.0, brightness: 1.0)),
+        ColorData(hsb: HSBColor(hue: 0.9, saturation: 0.5, brightness: 0.7)),
     ])
     
     @State var currentTab: Tab = .home

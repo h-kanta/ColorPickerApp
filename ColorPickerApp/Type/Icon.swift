@@ -27,6 +27,8 @@ enum Icon: CaseIterable {
     case trash
     // ストレージカラー追加
     case addStorageColor
+    // 選択
+    case select
 }
 
 extension Icon {
@@ -50,6 +52,8 @@ extension Icon {
             return "trash"
         case .addStorageColor:
             return "plus.square.fill.on.square.fill"
+        case .select:
+            return "arrow.down.circle"
         }
     }
 }

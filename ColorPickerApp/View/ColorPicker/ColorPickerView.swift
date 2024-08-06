@@ -31,23 +31,23 @@ struct ColorPickerView: View {
     @State var isBackground: Bool = false
     
     // SpriteKit の SKScene を用意
-    var scene: SKScene {
-        // SKScene オブジェクトを作成
-        let scene = ColorPalettePreviewScene(shared: shared,
-                                             colorDatas: $colorState.colorDatas,
-                                             isDrag: $isDragColor,
-                                             selectedColorIndex: $colorState.selectedIndex,
-                                             isBackground: $isBackground)
-        // シーンが View の　frame サイズいっぱいに表示されるようにリサイズ
-        scene.scaleMode = .resizeFill
-        return scene
-    }
+//    var scene: SKScene {
+//        // SKScene オブジェクトを作成
+//        let scene = ColorPalettePreviewScene(shared: shared,
+//                                             colorDatas: $colorState.colorDatas,
+//                                             isDrag: $isDragColor,
+//                                             selectedColorIndex: $colorState.selectedIndex,
+//                                             isBackground: $isBackground)
+//        // シーンが View の　frame サイズいっぱいに表示されるようにリサイズ
+//        scene.scaleMode = .resizeFill
+//        return scene
+//    }
     
     var body: some View {
         ZStack {
-            SpriteView(scene: scene, options: [.allowsTransparency])
-                .ignoresSafeArea()
-                .zIndex(isDragColor ? 10 : 0)
+//            SpriteView(scene: scene, options: [.allowsTransparency])
+//                .ignoresSafeArea()
+//                .zIndex(isDragColor ? 10 : 0)
             
             VStack {
                 // MARK: ナビゲーションバー
@@ -66,7 +66,9 @@ struct ColorPickerView: View {
                     rightContent: {
                         Button {
                             // カラーパレットに追加
-                            context.insert(ColorPalette(colorDates: colorState.colorDatas))
+                            context.insert(ColorPalette(colorDatas: colorState.colorDatas))
+                            
+                            print("aaaaaaaaa")
                             
                             dismiss()
                         } label: {
@@ -93,15 +95,34 @@ struct ColorPickerView: View {
                 .frame(width: shared.hueBarSize)
                 
                 Spacer()
+                
+                Divider()
+                
+                GeometryReader { geometry in
+                    VStack(spacing: 0) {
+                        Image(systemName: Icon.select.symbolName())
+                            .position(x: colorState.selectedIndex == 0 ? (geometry.size.width*0.3)/2 : colorState.selectedIndex == 1 ? (geometry.size.width*0.1/2) + geometry.size.width*0.3 : (geometry.size.width*0.6/2) + geometry.size.width*0.4,
+                                      y: 0)
+                            .font(.title3)
+                            .animation(.spring, value: colorState.selectedIndex)
+                            .frame(height: shared.screenHeight/50)
+
+                        ColorPreview(geometry: geometry)
+                            .frame(height: shared.screenHeight/9)
+                            .shadow(color: Color("Shadow2").opacity(0.20), radius: 10, x: 5, y: 5)
+                    }
+                }
+                .frame(height: shared.screenHeight/7)
+                .padding([.top, .horizontal])
             }
         }
-        .onChange(of: scenePhase) {
-            if scenePhase == .background {
-                isBackground = true
-            } else {
-                isBackground = false
-            }
-        }
+//        .onChange(of: scenePhase) {
+//            if scenePhase == .background {
+//                isBackground = true
+//            } else {
+//                isBackground = false
+//            }
+//        }
     }
         
     // MARK: カラーピッカータブビュー
@@ -132,12 +153,62 @@ struct ColorPickerView: View {
             }
         }
     }
+    
+    // MARK: カラープレビュー
+    @ViewBuilder
+    func ColorPreview(geometry: GeometryProxy) -> some View {
+        HStack(spacing: 0) {
+            ForEach(colorState.colorDatas.indices, id: \.self) { index in
+                let color = colorState.colorDatas[index]
+                if index == 0 {
+                    VStack {
+                        Rectangle()
+                            .fill(Color(hue: color.hsb.hue,
+                                        saturation: color.hsb.saturation,
+                                        brightness: color.hsb.brightness))
+                            .frame(width: geometry.size.width*0.3)
+                            .cornerRadius(10, corners: [.topLeft, .bottomLeft])
+                            .onTapGesture {
+                                colorState.selectedIndex = 0
+                            }
+                        Text("M")
+                    }
+                } else if index == 1 {
+                    VStack {
+                        Rectangle()
+                            .fill(Color(hue: color.hsb.hue,
+                                        saturation: color.hsb.saturation,
+                                        brightness: color.hsb.brightness))
+                            .frame(width: geometry.size.width*0.1)
+                            .onTapGesture {
+                                colorState.selectedIndex = 1
+                            }
+                        Text("A")
+                    }
+                } else if index == 2 {
+                    VStack {
+                        Rectangle()
+                            .fill(Color(hue: color.hsb.hue,
+                                        saturation: color.hsb.saturation,
+                                        brightness: color.hsb.brightness))
+                            .frame(width: geometry.size.width*0.6)
+                            .cornerRadius(10, corners: [.topRight, .bottomRight])
+                            .onTapGesture {
+                                colorState.selectedIndex = 2
+                            }
+                        Text("B")
+                    }
+                }
+            }
+        }
+    }
 }
 
 #Preview {
     ColorPickerView(colorState: ColorPickerViewState(colorDatas: [
         ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.7)),
-        ColorData(hsb: HSBColor(hue: 0.9, saturation: 0.5, brightness: 0.7))
+        ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.0, brightness: 1.0)),
+        ColorData(hsb: HSBColor(hue: 0.9, saturation: 0.5, brightness: 0.7)),
     ]))
         .environmentObject(GlobalSettings())
 }

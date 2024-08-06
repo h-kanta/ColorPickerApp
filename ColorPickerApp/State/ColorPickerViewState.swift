@@ -13,6 +13,7 @@ class ColorPickerViewState: ObservableObject {
 //    @Published var radians: Double
     @Published var selectedIndex: Int
     //@Published var isDragging: Bool
+//    @Published var colorSelectedPosition: CGFloat
     
     @EnvironmentObject private var shared: GlobalSettings
     

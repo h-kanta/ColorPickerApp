@@ -67,20 +67,35 @@ struct HSBColorPickerView: View {
                     .gesture(hueBarDragGesture)
                 
                 // サム
-                Circle()
-                    .frame(width: shared.hueBarSize * 0.2, height: shared.hueBarSize * 0.2)
-                    .foregroundStyle(Color(
-                        hue: colorState.colorDatas[colorState.selectedIndex].hsb.hue,
-                        saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
-                        brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness))
-                    .shadow(color: Color("Shadow1"), radius: 3, x: -3, y: -3)
-                    .shadow(color: Color("Shadow2").opacity(0.23), radius: 3, x: 3, y: 3)
-                    .offset(x: cos(colorState.colorDatas[colorState.selectedIndex].hsb.hueRadian) * shared.hueBarSize/2,
-                            y: sin(colorState.colorDatas[colorState.selectedIndex].hsb.hueRadian) * shared.hueBarSize/2)
-                    .animation(.spring,
-                               value: colorState.colorDatas[colorState.selectedIndex].hsb.hue)
+                ForEach(Array(colorState.colorDatas.enumerated()), id: \.offset) { index, color in
+                    ZStack {
+                        Circle()
+                            .frame(width: shared.hueBarSize * 0.2, height: shared.hueBarSize * 0.2)
+                            .foregroundStyle(.white)
+                            .overlay {
+                                Circle()
+                                    .stroke(Color(
+                                            hue: color.hsb.hue,
+                                            saturation: color.hsb.saturation,
+                                            brightness: color.hsb.brightness),
+                                            lineWidth: colorState.selectedIndex == index ? 10 : 2)
+                                    .shadow(color: Color("Shadow2").opacity(0.2), radius: 3, x: -3, y: -3)
+                                    .shadow(color: Color("Shadow2").opacity(0.2), radius: 3, x: 3, y: 3)
+                                    .animation(.spring, value: colorState.selectedIndex)
+                            }
+
+                        Text(index == 0 ? "M" : index == 1 ? "A" : "B")
+                    }
+                    .onTapGesture {
+                        colorState.selectedIndex = index
+                    }
+                    .zIndex(colorState.selectedIndex == index ? 1 : 0)
+                    .offset(x: cos(color.hsb.hueRadian) * shared.hueBarSize/2,
+                            y: sin(color.hsb.hueRadian) * shared.hueBarSize/2)
+                    .animation(.spring, value: color.hsb.hue)
                     .gesture(hueThumbDragGesture)
-                
+                }
+                    
                 VStack(spacing: 8) {
                     // MARK: カラー
                     Button {
@@ -402,7 +417,8 @@ struct HSBColorPickerView: View {
 #Preview {
     ColorPickerView(colorState: ColorPickerViewState(colorDatas: [
         ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.5)),
-        ColorData(hsb: HSBColor(hue: 0.3, saturation: 0.5, brightness: 0.2))
+        ColorData(hsb: HSBColor(hue: 0.3, saturation: 0.5, brightness: 0.2)),
+        ColorData(hsb: HSBColor(hue: 0.2, saturation: 0.5, brightness: 0.8)),
     ]))
         .environmentObject(GlobalSettings())
 }
