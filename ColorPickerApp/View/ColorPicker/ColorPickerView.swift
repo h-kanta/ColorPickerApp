@@ -6,29 +6,38 @@
 //
 
 import SwiftUI
-import SpriteKit
+import SwiftData
+//import SpriteKit
+
 
 struct ColorPickerView: View {
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
     // バックグランド移ったときやフォアグラウンドに戻ったときを検知
-    @Environment(\.scenePhase) private var scenePhase
+    //@Environment(\.scenePhase) private var scenePhase
     // SwiftData用
     @Environment(\.modelContext) private var context
+    // グローバル変数
+    @EnvironmentObject private var shared: GlobalSettings
     
     // カラーデータ
     @ObservedObject var colorState: ColorPickerViewState
-    // グローバル変数
-    @EnvironmentObject private var shared: GlobalSettings
+    // パレットインデックス
+    var colorPaletteIndex: Int?
     
     // 選択タブ
     @State var currentTab: ColorPickerTab = .hsb
     // タブエフェクト
     @Namespace private var animation
     
+    // カラーデータ保持用
+    @State var colorDatasBackup: [ColorData] = []
+    // カラーデータ変更を保持するかどうかのアラート
+    @State var isShowColorDataChangeAlert: Bool = false
+
     // カラープレビューをドラッグしたかどうか
-    @State var isDragColor: Bool = false
+    //@State var isDragColor: Bool = false
     // バックグラウンド状態かどうか
-    @State var isBackground: Bool = false
+    //@State var isBackground: Bool = false
     
     // SpriteKit の SKScene を用意
 //    var scene: SKScene {
@@ -44,17 +53,22 @@ struct ColorPickerView: View {
 //    }
     
     var body: some View {
-        ZStack {
+        NavigationStack {
 //            SpriteView(scene: scene, options: [.allowsTransparency])
 //                .ignoresSafeArea()
 //                .zIndex(isDragColor ? 10 : 0)
             
             VStack {
                 // MARK: ナビゲーションバー
-                CustomNavigationBarContainer(
+                CustomNavigationBarContainer (
                     leftContent: {
                         Button {
-                            dismiss()
+                            // カラーデータが変更された場合、その変更内容を保持するかアラート確認
+                            if colorState.colorDatas != colorDatasBackup && colorPaletteIndex == nil {
+                                isShowColorDataChangeAlert = true
+                            } else {
+                                dismiss()
+                            }
                         } label: {
                             Image(systemName: Icon.close.symbolName())
                                 .font(.title)
@@ -64,19 +78,17 @@ struct ColorPickerView: View {
                         Text("カラーピッカー")
                     },
                     rightContent: {
-                        Button {
-                            // カラーパレットに追加
-                            context.insert(ColorPalette(colorDatas: colorState.colorDatas))
-                            
-                            print("aaaaaaaaa")
-                            
-                            dismiss()
-                        } label: {
-                            Text("作成")
+                        if let index = colorPaletteIndex {
+                            NavigationLink(destination: ColorConfirmationView(colorState: colorState, colorPaletteIndex: index)) {
+                                Text("確認")
+                            }
+                        } else {
+                            NavigationLink(destination: ColorConfirmationView(colorState: colorState)) {
+                                Text("確認")
+                            }
                         }
                     }
                 )
-                .padding(.bottom)
                 
                 // MARK: カラーコントロール
                 VStack {
@@ -116,6 +128,23 @@ struct ColorPickerView: View {
                 .padding([.top, .horizontal])
             }
         }
+        .onAppear {
+            // カラーデータ保持
+            colorDatasBackup = colorState.colorDatas
+        }
+        // 変更保存のアラート
+        .alert("配色保持", isPresented: $isShowColorDataChangeAlert) {
+            Button("キャンセル", role: .cancel) {
+                colorState.colorDatas = colorDatasBackup
+                dismiss()
+            }
+            Button("OK") {
+                dismiss()
+            }
+        } message: {
+            Text("現在作成中の配色を保持しますか？")
+        }
+        
 //        .onChange(of: scenePhase) {
 //            if scenePhase == .background {
 //                isBackground = true
@@ -158,8 +187,7 @@ struct ColorPickerView: View {
     @ViewBuilder
     func ColorPreview(geometry: GeometryProxy) -> some View {
         HStack(spacing: 0) {
-            ForEach(colorState.colorDatas.indices, id: \.self) { index in
-                let color = colorState.colorDatas[index]
+            ForEach(Array(colorState.colorDatas.enumerated()), id: \.offset) { index, color in
                 if index == 0 {
                     VStack {
                         Rectangle()
@@ -202,6 +230,55 @@ struct ColorPickerView: View {
             }
         }
     }
+    
+//    // MARK: ナビゲーションバービュー（作成）
+//    func ColorPickerNavigationBarCreateView() -> some View {
+//        CustomNavigationBarContainer (
+//            leftContent: {
+//                Button {
+//                    // カラーデータが変更された場合、その変更内容を保持するかアラート確認
+//                    if colorState.colorDatas != colorDatasBackup {
+//                        isShowColorDataChangeAlert = true
+//                    } else {
+//                        dismiss()
+//                    }
+//                } label: {
+//                    Image(systemName: Icon.close.symbolName())
+//                        .font(.title)
+//                }
+//            },
+//            centerContent: {
+//                Text("カラーピッカー")
+//            },
+//            rightContent: {
+//                NavigationLink(destination: ColorConfirmationView(colorState: colorState)) {
+//                    Text("確認")
+//                }
+//            }
+//        )
+//    }
+    
+//    // MARK: ナビゲーションバービュー（編集）
+//    func ColorPickerNavigationBarEditView() -> some View {
+//        CustomNavigationBarContainer (
+//            leftContent: {
+//                Button {
+//                    dismiss()
+//                } label: {
+//                    Image(systemName: Icon.back.symbolName())
+//                        .font(.title)
+//                }
+//            },
+//            centerContent: {
+//                Text("カラーピッカー")
+//            },
+//            rightContent: {
+//                NavigationLink(destination: ColorConfirmationView(colorState: colorState)) {
+//                    Text("編集")
+//                }
+//            }
+//        )
+//    }
 }
 
 #Preview {

@@ -21,7 +21,7 @@ struct CustomTabBar: View {
                     if Tab.paletteCreate == tab {
                         // カラーパレット作成アイコン
                         Image(systemName: tab.symbolName())
-                            .font(.title)
+                            .font(.title2)
                             .frame(maxWidth: .infinity)
                             .scaleEffect(1.5)
                             .contentShape(Rectangle())
@@ -31,7 +31,7 @@ struct CustomTabBar: View {
                     } else {
                         VStack(spacing: 7) {
                             Image(systemName: currentTab == tab ? tab.symbolFillName() : tab.symbolName())
-                                .font(.title2)
+                                .font(.title3)
                                 .frame(maxWidth: .infinity)
                                 .scaleEffect(currentTab == tab ? 1.2 : 1.0)
                             
@@ -46,7 +46,7 @@ struct CustomTabBar: View {
                     }
             }
         }
-        .frame(height: shared.screenHeight / 10)
+        .frame(height: 49)
     }
 }
 

@@ -15,6 +15,11 @@ struct ColorPaletteView: View {
     // ColorPalette のデータを取得するために宣言
     @Query private var colorPalettes: [ColorPalette]
     
+    // 削除アラート
+    @State var isShowDeleteAlert: Bool = false
+    // 削除するパレット
+    @State var paletteDeleteTarget: ColorPalette?
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -41,8 +46,9 @@ struct ColorPaletteView: View {
                     
                     ScrollView {
                         VStack(spacing: 30) {
-                            ForEach(colorPalettes) { colorPalette in
-                                colorPaletteCardView(colorPalete: colorPalette)
+                            ForEach(Array(colorPalettes.enumerated()), id: \.offset) { index, colorPalette in
+                                colorPaletteCardView(colorPalette: colorPalette,
+                                                     colorPaletteIndex: index)
                             }
                         }
                         .padding()
@@ -50,11 +56,24 @@ struct ColorPaletteView: View {
                 }
             }
         }
+        // パレット削除アラート
+        .alert("パレット削除", isPresented: $isShowDeleteAlert) {
+            Button("キャンセル", role: .cancel) {
+                isShowDeleteAlert = false
+            }
+            Button("OK", role: .destructive) {
+                if let colorPalette = paletteDeleteTarget {
+                    context.delete(colorPalette)
+                }
+            }
+        } message: {
+            Text("このパレットを削除します。元に戻すことはできません。よろしいですか？")
+        }
     }
     
     // MARK: カラーパレットカード
     @ViewBuilder
-    func colorPaletteCardView(colorPalete: ColorPalette) -> some View {
+    func colorPaletteCardView(colorPalette: ColorPalette, colorPaletteIndex: Int) -> some View {
         ZStack {
             Rectangle()
                 .foregroundStyle(.white)
@@ -63,9 +82,10 @@ struct ColorPaletteView: View {
                 .shadow(color: Color("Shadow2").opacity(0.20), radius: 10, x: 5, y: 3)
             
             VStack(spacing: 0) {
+                // メニュー
                 HStack {
                     // お気に入り
-                    if colorPalete.isFavorite {
+                    if colorPalette.isFavorite {
                         Image(systemName: Icon.favorite.symbolName() + ".fill")
                             .foregroundStyle(.red)
                             .font(.title)
@@ -77,38 +97,59 @@ struct ColorPaletteView: View {
                     
                     Spacer()
                     
-                    // メニュー
-                    Image(systemName: Icon.menu.symbolName())
-                        .font(.title)
+                    Menu {
+                        // パレット編集
+                        Button {
+                            paletteEdit(colorPalette: colorPalette)
+                        } label: {
+                            Label("編集", systemImage: Icon.edit.symbolName())
+                        }
+                        
+                        // パレット削除
+                        Button(role: .destructive) {
+                            paletteDelete(colorPalette: colorPalette)
+                        } label: {
+                            Label("削除", systemImage: Icon.trash.symbolName())
+                        }
+                    } label: {
+                        Image(systemName: Icon.menu.symbolName())
+                            .font(.title)
+                            .foregroundStyle(.black)
+                            .contentShape(Circle())
+                    }
                 }
                 .padding()
                 
-                // MARK: カラー
-                GeometryReader { geometry in
-                    HStack(spacing: 0) {
-                        ForEach(colorPalete.colorDatas.indices, id: \.self) { index in
-                            let color = colorPalete.colorDatas[index]
-                            
-                            if index == 0 {
-                                Rectangle()
-                                    .fill(Color(hue: color.hsb.hue,
-                                                saturation: color.hsb.saturation,
-                                                brightness: color.hsb.brightness))
-                                    .frame(width: geometry.size.width * 0.3)
-                                    .cornerRadius(10, corners: [.bottomLeft])
-                            } else if index == 1 {
-                                Rectangle()
-                                    .fill(Color(hue: color.hsb.hue,
-                                                saturation: color.hsb.saturation,
-                                                brightness: color.hsb.brightness))
-                                    .frame(width: geometry.size.width * 0.1)
-                            } else {
-                                Rectangle()
-                                    .fill(Color(hue: color.hsb.hue,
-                                                saturation: color.hsb.saturation,
-                                                brightness: color.hsb.brightness))
-                                    .frame(width: geometry.size.width * 0.6)
-                                    .cornerRadius(10, corners: [.bottomRight])
+                // パレット
+                NavigationLink(destination: ColorConfirmationView(
+                        colorState: ColorPickerViewState(colorDatas: colorPalette.colorDatas),
+                        colorPaletteIndex: colorPaletteIndex)) {
+                    GeometryReader { geometry in
+                        HStack(spacing: 0) {
+                            ForEach(colorPalette.colorDatas.indices, id: \.self) { index in
+                                let color = colorPalette.colorDatas[index]
+                                
+                                if index == 0 {
+                                    Rectangle()
+                                        .fill(Color(hue: color.hsb.hue,
+                                                    saturation: color.hsb.saturation,
+                                                    brightness: color.hsb.brightness))
+                                        .frame(width: geometry.size.width * 0.3)
+                                        .cornerRadius(10, corners: [.bottomLeft])
+                                } else if index == 1 {
+                                    Rectangle()
+                                        .fill(Color(hue: color.hsb.hue,
+                                                    saturation: color.hsb.saturation,
+                                                    brightness: color.hsb.brightness))
+                                        .frame(width: geometry.size.width * 0.1)
+                                } else {
+                                    Rectangle()
+                                        .fill(Color(hue: color.hsb.hue,
+                                                    saturation: color.hsb.saturation,
+                                                    brightness: color.hsb.brightness))
+                                        .frame(width: geometry.size.width * 0.6)
+                                        .cornerRadius(10, corners: [.bottomRight])
+                                }
                             }
                         }
                     }
@@ -116,6 +157,17 @@ struct ColorPaletteView: View {
             }
         }
         .frame(height: 130)
+    }
+    
+    // MARK: パレット編集
+    private func paletteEdit(colorPalette: ColorPalette) {
+        
+    }
+    
+    // MARK: パレット削除
+    private func paletteDelete(colorPalette: ColorPalette) {
+        paletteDeleteTarget = colorPalette
+        isShowDeleteAlert = true
     }
 }
 

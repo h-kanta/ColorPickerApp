@@ -10,9 +10,12 @@ import Foundation
 struct HEXColor: Codable, Hashable {
     // hexコード
     var code: String
+    // コピー用
+    var copyCode: String
     
     init(code: String) {
         self.code = code
+        self.copyCode = code
     }
         
     // MARK: HEX から RGB に変換

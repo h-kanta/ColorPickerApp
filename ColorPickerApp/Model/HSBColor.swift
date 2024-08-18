@@ -100,9 +100,4 @@ struct HSBColor: Codable, Hashable {
         
         return RGBColor(red: red/255, green: green/255, blue: blue/255)
     }
-    
-    // MARK: HSB から HEX に変換
-    func toHEX() -> HEXColor {
-        return HEXColor(code: "000000")
-    }
 }

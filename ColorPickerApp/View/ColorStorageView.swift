@@ -42,7 +42,7 @@ struct ColorStorageView: View {
                     // カラーグリッド
                     GeometryReader { geometry in
                         ScrollView {
-                            LazyVGrid(columns: columns, spacing: 20) {
+                            LazyVGrid(columns: columns, spacing: 30) {
                                 ForEach(colorStorages, id: \.self) { color in
                                     colorGridItem(rgbColor: color.rgbColor, geometry: geometry)
                                 }
@@ -62,19 +62,21 @@ struct ColorStorageView: View {
         VStack {
             // カラー
             Circle()
-                .frame(width: (geometry.size.width - 60) / 4,
-                       height: (geometry.size.width - 60) / 4) // 60は各アイテムの間隔を考慮
+                .frame(width: (geometry.size.width - 60) / 5,
+                       height: (geometry.size.width - 60) / 5) // 60は各アイテムの間隔を考慮
                 .foregroundStyle(Color(red: rgbColor.red, green: rgbColor.green, blue: rgbColor.blue))
                 .cornerRadius(10, corners: .allCorners)
-                .shadow(color: Color("Shadow1"), radius: 3, x: -5, y: -5)
-                .shadow(color: Color("Shadow2").opacity(0.23), radius: 3, x: 5, y: 5)
+                .shadow(color: Color("Shadow2").opacity(0.23), radius: 3, x: 3, y: 3)
             
             // HEXコード
             Text("#\(rgbColor.toHEX().code)")
+                .font(.caption)
         }
     }
 }
 
 #Preview {
-    ColorStorageView()
+    ContentView()
+        .environmentObject(GlobalSettings())
+        .modelContainer(for: [ColorPalette.self, ColorStorage.self])
 }

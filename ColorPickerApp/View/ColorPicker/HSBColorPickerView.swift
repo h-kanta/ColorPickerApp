@@ -78,7 +78,7 @@ struct HSBColorPickerView: View {
                                             hue: color.hsb.hue,
                                             saturation: color.hsb.saturation,
                                             brightness: color.hsb.brightness),
-                                            lineWidth: colorState.selectedIndex == index ? 10 : 2)
+                                            lineWidth: colorState.selectedIndex == index ? 13 : 2)
                                     .shadow(color: Color("Shadow2").opacity(0.2), radius: 3, x: -3, y: -3)
                                     .shadow(color: Color("Shadow2").opacity(0.2), radius: 3, x: 3, y: 3)
                                     .animation(.spring, value: colorState.selectedIndex)
@@ -86,45 +86,46 @@ struct HSBColorPickerView: View {
 
                         Text(index == 0 ? "M" : index == 1 ? "A" : "B")
                     }
-                    .onTapGesture {
-                        colorState.selectedIndex = index
-                    }
                     .zIndex(colorState.selectedIndex == index ? 1 : 0)
                     .offset(x: cos(color.hsb.hueRadian) * shared.hueBarSize/2,
                             y: sin(color.hsb.hueRadian) * shared.hueBarSize/2)
                     .animation(.spring, value: color.hsb.hue)
-                    .gesture(hueThumbDragGesture)
+                    .gesture(hueThumbDragGesture(index: index))
                 }
                     
                 VStack(spacing: 8) {
-                    // MARK: カラー
-                    Button {
-                        
-                    } label: {
-                        ZStack {
-                            Circle()
-                                .frame(width: shared.hueBarSize * 0.3, height: shared.hueBarSize * 0.3)
-                                .foregroundStyle(Color(
-                                    hue: colorState.colorDatas[colorState.selectedIndex].hsb.hue,
-                                    saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
-                                    brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness))
-                                .cornerRadius(10)
-                                .shadow(color: Color("Shadow2").opacity(0.23), radius: 1, x: 4, y: 4)
-                                .padding(8)
-                            
-                            Image(systemName: Icon.menu.symbolName())
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .foregroundStyle(.white)
-                            
-                        }
-                    }
+                    // MARK: カラーストレージメニュー
+                    ColorStorageMenu(colorState: colorState)
+                        .environmentObject(GlobalSettings())
                     
                     // MARK: HEX
                     HStack {
                         HStack {
-                            Text("#")
+                            Text("#").foregroundStyle(.gray)
                             TextField("", text: $colorState.colorDatas[colorState.selectedIndex].hex.code)
+                                .onChange(of: colorState.colorDatas[colorState.selectedIndex].hex.code) {
+                                    // 小文字のアルファベットと数字のみを許可
+                                    let filtered = colorState.colorDatas[colorState.selectedIndex].hex.code.filter { "abcdef0123456789".contains($0)
+                                    }
+                                    if filtered != colorState.colorDatas[colorState.selectedIndex].hex.code {
+                                        colorState.colorDatas[colorState.selectedIndex].hex.code = filtered
+                                    }
+                                    // 最大桁数6桁を超えた場合、テキストを切り詰める
+                                    if colorState.colorDatas[colorState.selectedIndex].hex.code.count > 6 {
+                                        colorState.colorDatas[colorState.selectedIndex].hex.code = String(colorState.colorDatas[colorState.selectedIndex].hex.code.prefix(6))
+                                    }
+                                }
+                                .onSubmit {
+                                    // 確定
+                                    if colorState.colorDatas[colorState.selectedIndex].hex.code.count == 6 {
+                                        colorState.HEXToRGB()
+                                        colorState.RGBToHSB()
+                                        colorState.colorDatas[colorState.selectedIndex].hex.copyCode = colorState.colorDatas[colorState.selectedIndex].hex.code
+                                    } else {
+                                        colorState.colorDatas[colorState.selectedIndex].hex.code = colorState.colorDatas[colorState.selectedIndex].hex.copyCode
+                                    }
+                                }
+                                
                         }
                         .font(.title3)
                         .fontWeight(.bold)
@@ -144,7 +145,7 @@ struct HSBColorPickerView: View {
                                 .cornerRadius(10)
                         }
                     }
-                    .frame(width: shared.hueBarSize * 0.7)
+                    .frame(width: shared.hueBarSize * 0.65)
                 }
             }
             .padding(.bottom, shared.screenHeight * 0.04)
@@ -179,7 +180,7 @@ struct HSBColorPickerView: View {
                     }), startPoint: .leading, endPoint: .trailing))
                     .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.03)
                     .gesture(saturationBarDragGesture)
-                    .padding(.horizontal)
+                    .padding(.horizontal, (shared.screenHeight * 0.05)/2)
                 
                 // サム
                 ZStack {
@@ -222,7 +223,7 @@ struct HSBColorPickerView: View {
                                          endPoint: .trailing))
                     .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.03)
                     .gesture(brightnessBarDragGesture)
-                    .padding(.horizontal)
+                    .padding(.horizontal, (shared.screenHeight * 0.05)/2)
                 
                 // サム
                 ZStack {
@@ -271,16 +272,15 @@ struct HSBColorPickerView: View {
                 
                 colorState.HSBToRGB()
                 colorState.RGBToHEX()
-//                 [selectedColorIndex] = Color(hue: colorState.hsbColor.hue,
-//                                  saturation: colorState.hsbColor.saturation,
-//                                  brightness: colorState.hsbColor.brightness)
             }
     }
     // サム
-    var hueThumbDragGesture: some Gesture {
+    func hueThumbDragGesture(index: Int) -> some Gesture {
         DragGesture(minimumDistance: 0)
             // ドラッグ時
             .onChanged { value in
+                colorState.selectedIndex = index
+                
                 let translation = value.location
                 let vector = CGVector(dx: translation.x, dy: translation.y)
                 

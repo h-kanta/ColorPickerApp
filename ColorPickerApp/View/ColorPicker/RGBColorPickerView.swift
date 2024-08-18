@@ -13,43 +13,15 @@ struct RGBColorPickerView: View {
     
     @EnvironmentObject private var shared: GlobalSettings
     
-    // RGB値 0~255 テキストフィールド出力用に使用
-    // Red
-    @State private var redByteScaleValue: Int = 0
-    // Green
-    @State private var greenByteScaleValue: Int = 0
-    // Blue
-    @State private var blueByteScaleValue: Int = 0
+    @State private var value: Int = 0
     
     var body: some View {
         VStack {
-            // MARK: カラー
-            Button {
-                
-            } label: {
-                ZStack {
-                    Circle()
-                        .frame(width: shared.hueBarSize * 0.3, height: shared.hueBarSize * 0.3)
-                        .foregroundStyle(Color(
-                            hue: colorState.colorDatas[colorState.selectedIndex].hsb.hue,
-                            saturation: colorState.colorDatas[colorState.selectedIndex].hsb.saturation,
-                            brightness: colorState.colorDatas[colorState.selectedIndex].hsb.brightness))
-                        .cornerRadius(10)
-                        .shadow(color: Color("Shadow2").opacity(0.23), radius: 1, x: 4, y: 4)
-                        .padding(8)
-                    
-                    Image(systemName: Icon.menu.symbolName())
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.white)
-                    
-                }
-            }
+            // MARK: カラーストレージメニュー
+            ColorStorageMenu(colorState: colorState)
+                .environmentObject(GlobalSettings())
             
             RGBSlider()
-        }
-        .onAppear {
-            RGBConvertToByteScale()
         }
     }
     
@@ -64,7 +36,7 @@ struct RGBColorPickerView: View {
                 Spacer()
                 
                 // Red値
-                TextField("", value: $redByteScaleValue, format: .number)
+                TextField("", text: $colorState.colorDatas[colorState.selectedIndex].rgb.redByteScaleValue)
                     .font(.title3)
                     .fontWeight(.bold)
                     .padding(8)
@@ -72,15 +44,40 @@ struct RGBColorPickerView: View {
                     .cornerRadius(10)
                     .frame(width: shared.screenWidth * 0.2)
                     .multilineTextAlignment(.center)
-                    .onChange(of: redByteScaleValue) {
-//                        if !colorState.isDragging {
-//                            //redByteScaleValue = redByteScaleValue > 255 ? 255 : redByteScaleValue
-//                            colorState.colorDatas[colorState.selectedIndex].rgb.red = Double(redByteScaleValue) / 255
-//                        }
+                    .onChange(of: colorState.colorDatas[colorState.selectedIndex].rgb.redByteScaleValue) {
+                        // 数字のみを許可
+                        let filtered = colorState.colorDatas[colorState.selectedIndex].rgb.redByteScaleValue.filter { "0123456789".contains($0)
+                        }
+                        if filtered != colorState.colorDatas[colorState.selectedIndex].rgb.redByteScaleValue {
+                            colorState.colorDatas[colorState.selectedIndex].rgb.redByteScaleValue = filtered
+                        }
+                        
+                        // 最大桁数6桁を超えた場合、テキストを切り詰める
+                        if 3 < colorState.colorDatas[colorState.selectedIndex].rgb.redByteScaleValue.count {
+                            colorState.colorDatas[colorState.selectedIndex].rgb.redByteScaleValue = String(colorState.colorDatas[colorState.selectedIndex].rgb.redByteScaleValue.prefix(3))
+                        }
                     }
+                    .onSubmit {
+                        // 確定
+                        let redValue: Int = Int(colorState.colorDatas[colorState.selectedIndex].rgb.redByteScaleValue) 
+                        ?? -1
+                        
+                        // 0~255の間であれば正常
+                        if redValue < 256 && 0 <= redValue {
+                            colorState.colorDatas[colorState.selectedIndex].rgb.red = Double(redValue)/255
+                            // 保持用
+                            colorState.colorDatas[colorState.selectedIndex].rgb.redCopy = colorState.colorDatas[colorState.selectedIndex].rgb.red
+                            colorState.RGBToHSB()
+                            colorState.RGBToHEX()
+                            
+                        } else {
+                            colorState.colorDatas[colorState.selectedIndex].rgb.redByteScaleValue = Int(colorState.colorDatas[colorState.selectedIndex].rgb.redCopy*255).description
+                        }
+                    }
+                
                 // コピーボタン
                 Button {
-                    UIPasteboard.general.string = redByteScaleValue.description
+                    UIPasteboard.general.string = colorState.colorDatas[colorState.selectedIndex].rgb.redByteScaleValue.description
                 } label: {
                     Image(systemName: Icon.copy.symbolName())
                         .font(.title3)
@@ -101,7 +98,7 @@ struct RGBColorPickerView: View {
                     }), startPoint: .leading, endPoint: .trailing))
                     .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.03)
                     .gesture(redBarDragGesture)
-                    .padding(.horizontal)
+                    .padding(.horizontal, (shared.screenHeight * 0.05)/2)
                 
                 // サム
                 ZStack {
@@ -128,7 +125,7 @@ struct RGBColorPickerView: View {
                 Spacer()
                 
                 // Green値
-                TextField("", value: $greenByteScaleValue, format: .number)
+                TextField("", text: $colorState.colorDatas[colorState.selectedIndex].rgb.greenByteScaleValue)
                     .font(.title3)
                     .fontWeight(.bold)
                     .padding(8)
@@ -136,10 +133,42 @@ struct RGBColorPickerView: View {
                     .cornerRadius(10)
                     .frame(width: shared.screenWidth * 0.2)
                     .multilineTextAlignment(.center)
+                    .onChange(of: colorState.colorDatas[colorState.selectedIndex].rgb.greenByteScaleValue) {
+                        // 数字のみを許可
+                        let filtered = colorState.colorDatas[colorState.selectedIndex].rgb.greenByteScaleValue.filter { "0123456789".contains($0)
+                        }
+                        if filtered != colorState.colorDatas[colorState.selectedIndex].rgb.greenByteScaleValue {
+                            colorState.colorDatas[colorState.selectedIndex].rgb.greenByteScaleValue = filtered
+                        }
+                        
+                        // 最大桁数6桁を超えた場合、テキストを切り詰める
+                        if 3 < colorState.colorDatas[colorState.selectedIndex].rgb.greenByteScaleValue.count {
+                            colorState.colorDatas[colorState.selectedIndex].rgb.greenByteScaleValue = String(colorState.colorDatas[colorState.selectedIndex].rgb.greenByteScaleValue.prefix(3))
+                        }
+                    }
+                    .onSubmit {
+                        // 確定
+                        let greenValue: Int = Int(colorState.colorDatas[colorState.selectedIndex].rgb.greenByteScaleValue) 
+                            ?? -1
+                        // 0~255の間であれば正常
+                        if greenValue < 256 && 0 <= greenValue {
+                            colorState.colorDatas[colorState.selectedIndex].rgb.green =
+                            Double(greenValue)/255
+                            // 保持用
+                            colorState.colorDatas[colorState.selectedIndex].rgb.greenCopy = colorState.colorDatas[colorState.selectedIndex].rgb.green
+                            colorState.RGBToHSB()
+                            colorState.RGBToHEX()
+                            
+                        } else {
+                            colorState.colorDatas[colorState.selectedIndex].rgb.greenByteScaleValue =
+                                Int(colorState.colorDatas[colorState.selectedIndex].rgb.greenCopy*255).description
+                        }
+                    }
                 
                 // コピーボタン
                 Button {
-                    UIPasteboard.general.string = greenByteScaleValue.description
+                    UIPasteboard.general.string =
+                        colorState.colorDatas[colorState.selectedIndex].rgb.greenByteScaleValue.description
                 } label: {
                     Image(systemName: Icon.copy.symbolName())
                         .font(.title3)
@@ -160,7 +189,7 @@ struct RGBColorPickerView: View {
                     }), startPoint: .leading, endPoint: .trailing))
                     .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.03)
                     .gesture(greenBarDragGesture)
-                    .padding(.horizontal)
+                    .padding(.horizontal, (shared.screenHeight * 0.05)/2)
                 
                 // サム
                 ZStack {
@@ -187,7 +216,7 @@ struct RGBColorPickerView: View {
                 Spacer()
                 
                 // Blue値
-                TextField("", value: $blueByteScaleValue, format: .number)
+                TextField("", text: $colorState.colorDatas[colorState.selectedIndex].rgb.blueByteScaleValue)
                     .font(.title3)
                     .fontWeight(.bold)
                     .padding(8)
@@ -195,11 +224,43 @@ struct RGBColorPickerView: View {
                     .cornerRadius(10)
                     .frame(width: shared.screenWidth * 0.2)
                     .multilineTextAlignment(.center)
+                    .keyboardType(.numberPad)
+                    .onChange(of: colorState.colorDatas[colorState.selectedIndex].rgb.blueByteScaleValue) {
+                        // 数字のみを許可
+                        let filtered = colorState.colorDatas[colorState.selectedIndex].rgb.blueByteScaleValue.filter { "0123456789".contains($0)
+                        }
+                        if filtered != colorState.colorDatas[colorState.selectedIndex].rgb.blueByteScaleValue {
+                            colorState.colorDatas[colorState.selectedIndex].rgb.blueByteScaleValue = filtered
+                        }
+                        
+                        // 最大桁数6桁を超えた場合、テキストを切り詰める
+                        if 3 < colorState.colorDatas[colorState.selectedIndex].rgb.blueByteScaleValue.count {
+                            colorState.colorDatas[colorState.selectedIndex].rgb.blueByteScaleValue = String(colorState.colorDatas[colorState.selectedIndex].rgb.blueByteScaleValue.prefix(3))
+                        }
+                    }
+                    .onSubmit {
+                        // 確定
+                        let blueValue: Int = Int(colorState.colorDatas[colorState.selectedIndex].rgb.blueByteScaleValue)
+                            ?? -1
+                        // 0~255の間であれば正常
+                        if blueValue < 256 && 0 <= blueValue {
+                            colorState.colorDatas[colorState.selectedIndex].rgb.blue =
+                                Double(blueValue)/255
+                            // 保持用
+                            colorState.colorDatas[colorState.selectedIndex].rgb.blueCopy = colorState.colorDatas[colorState.selectedIndex].rgb.blue
+                            colorState.RGBToHSB()
+                            colorState.RGBToHEX()
+                            
+                        } else {
+                            colorState.colorDatas[colorState.selectedIndex].rgb.blueByteScaleValue =
+                            Int(colorState.colorDatas[colorState.selectedIndex].rgb.blueCopy*255).description
+                        }
+                    }
                 
                 // コピーボタン
                 Button {
-                    UIPasteboard.general.string = blueByteScaleValue.description
-                    print(blueByteScaleValue)
+                    UIPasteboard.general.string =
+                        colorState.colorDatas[colorState.selectedIndex].rgb.blueByteScaleValue.description
                 } label: {
                     Image(systemName: Icon.copy.symbolName())
                         .font(.title3)
@@ -220,7 +281,7 @@ struct RGBColorPickerView: View {
                     }), startPoint: .leading, endPoint: .trailing))
                     .frame(width: shared.hueBarSize, height: shared.screenHeight * 0.03)
                     .gesture(blueBarDragGesture)
-                    .padding(.horizontal)
+                    .padding(.horizontal, (shared.screenHeight * 0.05)/2)
                 
                 // サム
                 ZStack {
@@ -242,65 +303,69 @@ struct RGBColorPickerView: View {
     
     //MARK: Red バードラッグジェスチャー
     var redThumbDragGesture: some Gesture {
-        createColorBarGesture(offset: 15, property: \.red)
+        createColorBarGesture(offset: 15, rgbProp: \.red, 
+                              rgbByteValueProp: \.redByteScaleValue,
+                              rgbCopyByteValueProp: \.redCopy)
     }
 
     var redBarDragGesture: some Gesture {
-        createColorBarGesture(offset: 0, property: \.red)
+        createColorBarGesture(offset: 0, rgbProp: \.red, 
+                              rgbByteValueProp: \.redByteScaleValue,
+                              rgbCopyByteValueProp: \.redCopy)
     }
 
     //MARK: Green バードラッグジェスチャー
     var greenThumbDragGesture: some Gesture {
-        createColorBarGesture(offset: 15, property: \.green)
+        createColorBarGesture(offset: 15, rgbProp: \.green,
+                              rgbByteValueProp: \.greenByteScaleValue,
+                              rgbCopyByteValueProp: \.greenCopy)
     }
 
     var greenBarDragGesture: some Gesture {
-        createColorBarGesture(offset: 0, property: \.green)
+        createColorBarGesture(offset: 0, rgbProp: \.green,
+                              rgbByteValueProp: \.greenByteScaleValue,
+                              rgbCopyByteValueProp: \.greenCopy)
     }
     
     //MARK: Blue バードラッグジェスチャー
     var blueThumbDragGesture: some Gesture {
-        createColorBarGesture(offset: 15, property: \.blue)
+        createColorBarGesture(offset: 15, rgbProp: \.blue,
+                              rgbByteValueProp: \.blueByteScaleValue,
+                              rgbCopyByteValueProp: \.blueCopy)
     }
 
     var blueBarDragGesture: some Gesture {
-        createColorBarGesture(offset: 0, property: \.blue)
+        createColorBarGesture(offset: 0, rgbProp: \.blue, 
+                              rgbByteValueProp: \.blueByteScaleValue,
+                              rgbCopyByteValueProp: \.blueCopy)
     }
     
     // MARK: ドラッグジェスチャー
-    private func createColorBarGesture(offset: CGFloat, property: WritableKeyPath<RGBColor, Double>) -> some Gesture {
+    private func createColorBarGesture(offset: CGFloat, 
+                                       rgbProp: WritableKeyPath<RGBColor, Double>,
+                                       rgbByteValueProp: WritableKeyPath<RGBColor, String>,
+                                       rgbCopyByteValueProp: WritableKeyPath<RGBColor, Double>) -> some Gesture {
         DragGesture(minimumDistance: 0)
             .onChanged { value in
                 let ratio = (value.location.x - offset) / shared.hueBarSize
                 let adjustedRatio = min(max(0, ratio), 1)
                 
-                colorState.colorDatas[colorState.selectedIndex].rgb[keyPath: property] = adjustedRatio
+                colorState.colorDatas[colorState.selectedIndex].rgb[keyPath: rgbProp] = adjustedRatio
+                colorState.colorDatas[colorState.selectedIndex].rgb[keyPath: rgbByteValueProp] = Int(adjustedRatio * 255).description
+                colorState.colorDatas[colorState.selectedIndex].rgb[keyPath: rgbCopyByteValueProp] = adjustedRatio
+                
                 
                 colorState.RGBToHSB()
                 colorState.RGBToHEX()
-                RGBConvertToByteScale()
             }
     }
-    
-    // MARK: RGBの値の範囲を 「0.0~1.0」から「0~255」に変換
-    func RGBConvertToByteScale() {
-        redByteScaleValue = Int(colorState.colorDatas[colorState.selectedIndex].rgb.red * 255)
-        greenByteScaleValue = Int(colorState.colorDatas[colorState.selectedIndex].rgb.green * 255)
-        blueByteScaleValue = Int(colorState.colorDatas[colorState.selectedIndex].rgb.blue * 255)
-    }
-    
-    // MARK: カラー変換
-//    func ColorConvert() {
-//        colorPickerState.RGBToHSB()
-//        colorPickerState.RGBToHEX()
-//        RGBConvertToByteScale()
-//    }
 }
 
 #Preview {
     ColorPickerView(colorState: ColorPickerViewState(colorDatas: [
         ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.5)),
-        ColorData(hsb: HSBColor(hue: 0.3, saturation: 0.5, brightness: 0.2))
+        ColorData(hsb: HSBColor(hue: 0.3, saturation: 0.5, brightness: 0.2)),
+        ColorData(hsb: HSBColor(hue: 0.2, saturation: 0.2, brightness: 0.7)),
     ]))
         .environmentObject(GlobalSettings())
 }

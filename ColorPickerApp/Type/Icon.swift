@@ -25,10 +25,14 @@ enum Icon: CaseIterable {
     case plus
     // ゴミ箱
     case trash
-    // ストレージカラー追加
-    case addStorageColor
     // 選択
     case select
+    // カラーストレージ追加
+    case addColorStorage
+    // カラーストレージ選択
+    case selectColorStorage
+    // 編集
+    case edit
 }
 
 extension Icon {
@@ -50,10 +54,16 @@ extension Icon {
             return "plus"
         case .trash:
             return "trash"
-        case .addStorageColor:
-            return "plus.square.fill.on.square.fill"
         case .select:
             return "arrow.down.circle"
+        case .addColorStorage:
+            return "square.and.arrow.down.on.square"
+        case .selectColorStorage:
+            return "square.and.arrow.up.on.square"
+        case .edit:
+            return "pencil"
         }
+        
+        
     }
 }

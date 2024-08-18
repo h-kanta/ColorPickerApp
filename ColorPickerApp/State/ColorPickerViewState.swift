@@ -14,6 +14,7 @@ class ColorPickerViewState: ObservableObject {
     @Published var selectedIndex: Int
     //@Published var isDragging: Bool
 //    @Published var colorSelectedPosition: CGFloat
+    @Published var showColorPickerView: Bool
     
     @EnvironmentObject private var shared: GlobalSettings
     
@@ -21,6 +22,7 @@ class ColorPickerViewState: ObservableObject {
         self.colorDatas = colorDatas
         self.selectedIndex = 0
         //self.isDragging = false
+        self.showColorPickerView = false
     }
     
     // MARK: コンバート
@@ -38,6 +40,11 @@ class ColorPickerViewState: ObservableObject {
     // RGB から HEX に変換
     func RGBToHEX() {
         colorDatas[selectedIndex].hex = colorDatas[selectedIndex].rgb.toHEX()
+    }
+    
+    // HEX から RGB に変換
+    func HEXToRGB() {
+        colorDatas[selectedIndex].rgb = colorDatas[selectedIndex].hex.toRGB()
     }
     
     // 数値から % に変換
