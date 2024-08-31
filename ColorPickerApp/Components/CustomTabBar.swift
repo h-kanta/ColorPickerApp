@@ -10,10 +10,13 @@ import SwiftUI
 struct CustomTabBar: View {
     
     @Binding var currentTab: Tab
-    @Binding var showColorPicker: Bool
+    @Binding var isShowColorPickerView: Bool
     
     // グローバル変数
     @EnvironmentObject private var shared: GlobalSettings
+    
+    // 触覚フィードバック
+    @State private var selection = false
     
     var body: some View {
         HStack {
@@ -21,12 +24,13 @@ struct CustomTabBar: View {
                     if Tab.paletteCreate == tab {
                         // カラーパレット作成アイコン
                         Image(systemName: tab.symbolName())
-                            .font(.title2)
+                            .font(.title)
                             .frame(maxWidth: .infinity)
-                            .scaleEffect(1.5)
+                            .scaleEffect(1.2)
                             .contentShape(Rectangle())
                             .onTapGesture {
-                                showColorPicker = true
+                                isShowColorPickerView = true
+                                selection.toggle()
                             }
                     } else {
                         VStack(spacing: 7) {
@@ -42,11 +46,14 @@ struct CustomTabBar: View {
                         .contentShape(Rectangle())
                         .onTapGesture {
                             currentTab = tab
+                            selection.toggle()
                         }
                     }
             }
         }
         .frame(height: 49)
+        .padding(.horizontal)
+        .sensoryFeedback(.selection, trigger: selection)
     }
 }
 

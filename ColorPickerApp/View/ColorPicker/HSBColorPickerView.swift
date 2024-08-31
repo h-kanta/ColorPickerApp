@@ -125,6 +125,7 @@ struct HSBColorPickerView: View {
                                         colorState.colorDatas[colorState.selectedIndex].hex.code = colorState.colorDatas[colorState.selectedIndex].hex.copyCode
                                     }
                                 }
+                                .kerning(2) // 文字の間隔を広げる
                                 
                         }
                         .font(.title3)
@@ -145,7 +146,7 @@ struct HSBColorPickerView: View {
                                 .cornerRadius(10)
                         }
                     }
-                    .frame(width: shared.hueBarSize * 0.65)
+                    .frame(width: shared.hueBarSize * 0.7)
                 }
             }
             .padding(.bottom, shared.screenHeight * 0.04)
@@ -415,10 +416,14 @@ struct HSBColorPickerView: View {
 }
 
 #Preview {
-    ColorPickerView(colorState: ColorPickerViewState(colorDatas: [
+    @State var isShowColorPickerView: Bool = true
+    
+    return VStack {
+        ColorPickerView(colorState: ColorPickerViewState(colorDatas: [
         ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.5)),
         ColorData(hsb: HSBColor(hue: 0.3, saturation: 0.5, brightness: 0.2)),
         ColorData(hsb: HSBColor(hue: 0.2, saturation: 0.5, brightness: 0.8)),
-    ]))
+    ]), isShow: $isShowColorPickerView)
         .environmentObject(GlobalSettings())
+    }
 }

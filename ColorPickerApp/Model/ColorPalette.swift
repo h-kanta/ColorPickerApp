@@ -11,17 +11,18 @@ import SwiftUI
 @Model
 final class ColorPalette {
     var id: String
+    var themeName: String
     var colorDatas: [ColorData]
     var isFavorite: Bool
     var createdAt: Date
     var updatedAt: Date
     
-    init(colorDatas: [ColorData]) {
+    init(colorDatas: [ColorData], themeName: String) {
         self.id = UUID().uuidString
+        self.themeName = themeName
         self.colorDatas = colorDatas
         self.isFavorite = false
         self.createdAt = Date()
         self.updatedAt = Date()
     }
 }
-

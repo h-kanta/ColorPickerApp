@@ -362,10 +362,14 @@ struct RGBColorPickerView: View {
 }
 
 #Preview {
-    ColorPickerView(colorState: ColorPickerViewState(colorDatas: [
+    @State var isShowColorPickerView: Bool = true
+    
+    return VStack {
+        ColorPickerView(colorState: ColorPickerViewState(colorDatas: [
         ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.5)),
         ColorData(hsb: HSBColor(hue: 0.3, saturation: 0.5, brightness: 0.2)),
-        ColorData(hsb: HSBColor(hue: 0.2, saturation: 0.2, brightness: 0.7)),
-    ]))
+        ColorData(hsb: HSBColor(hue: 0.2, saturation: 0.5, brightness: 0.8)),
+    ]), isShow: $isShowColorPickerView)
         .environmentObject(GlobalSettings())
+    }
 }

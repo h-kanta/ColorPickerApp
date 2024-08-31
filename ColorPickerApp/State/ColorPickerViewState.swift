@@ -14,7 +14,7 @@ class ColorPickerViewState: ObservableObject {
     @Published var selectedIndex: Int
     //@Published var isDragging: Bool
 //    @Published var colorSelectedPosition: CGFloat
-    @Published var showColorPickerView: Bool
+//    @Published var showColorPickerView: Bool
     
     @EnvironmentObject private var shared: GlobalSettings
     
@@ -22,7 +22,7 @@ class ColorPickerViewState: ObservableObject {
         self.colorDatas = colorDatas
         self.selectedIndex = 0
         //self.isDragging = false
-        self.showColorPickerView = false
+//        self.showColorPickerView = false
     }
     
     // MARK: コンバート

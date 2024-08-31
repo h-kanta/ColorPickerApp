@@ -10,58 +10,58 @@ import Foundation
 
 // MARK: 下部タブ
 enum Tab: CaseIterable {
-    case home
+//    case home
     case palette
     case paletteCreate
     case favoriteColor
-    case option
+//    case option
 }
 
 extension Tab {
     func tabName() -> String {
         switch self {
-        case .home:
-            return "ホーム"
+//        case .home:
+//            return "ホーム"
         case .palette:
             return "配色"
         case .paletteCreate:
             return ""
         case .favoriteColor:
             return "保存済み色"
-        case .option:
-            return "設定"
+//        case .option:
+//            return "設定"
         }
     }
     
     
     func symbolName() -> String {
         switch self {
-        case .home:
-            return "house"
+//        case .home:
+//            return "house"
         case .palette:
             return "paintpalette"
         case .paletteCreate:
             return "plus.square"
         case .favoriteColor:
             return "square.grid.2x2"
-        case .option:
-            return "gearshape"
+//        case .option:
+//            return "gearshape"
         }
     }
     
     
     func symbolFillName() -> String {
         switch self {
-        case .home:
-            return "house.fill"
+//        case .home:
+//            return "house.fill"
         case .palette:
             return "paintpalette.fill"
         case .paletteCreate:
             return "plus.square"
         case .favoriteColor:
             return "square.grid.2x2.fill"
-        case .option:
-            return "gearshape.fill"
+//        case .option:
+//            return "gearshape.fill"
         }
     }
 }

@@ -16,13 +16,13 @@ struct ColorPickerView: View {
     //@Environment(\.scenePhase) private var scenePhase
     // SwiftData用
     @Environment(\.modelContext) private var context
+    // ColorPalette のデータを取得するために宣言
+    @Query private var colorPalettes: [ColorPalette]
     // グローバル変数
     @EnvironmentObject private var shared: GlobalSettings
     
     // カラーデータ
     @ObservedObject var colorState: ColorPickerViewState
-    // パレットインデックス
-    var colorPaletteIndex: Int?
     
     // 選択タブ
     @State var currentTab: ColorPickerTab = .hsb
@@ -33,7 +33,23 @@ struct ColorPickerView: View {
     @State var colorDatasBackup: [ColorData] = []
     // カラーデータ変更を保持するかどうかのアラート
     @State var isShowColorDataChangeAlert: Bool = false
+    
+    // カラーピッカー画面表示
+    @Binding var isShow: Bool
+    // カラーパレットインデックス
+    @State var colorPaletteIndex: Int?
+    
+    // パレットテーマ入力アラート表示
+    @State var isShowPaletteThemeNameInputAlert: Bool = false
+    // パレットテーマ
+    @State var paletteThemeName: String = ""
+    
+    // カラー選択画面表示
+    @State var isShowSelectedColorView: Bool = false
 
+    // 触覚フォードバック
+    @State var success: Bool = false
+    
     // カラープレビューをドラッグしたかどうか
     //@State var isDragColor: Bool = false
     // バックグラウンド状態かどうか
@@ -63,10 +79,15 @@ struct ColorPickerView: View {
                 CustomNavigationBarContainer (
                     leftContent: {
                         Button {
-                            // カラーデータが変更された場合、その変更内容を保持するかアラート確認
-                            if colorState.colorDatas != colorDatasBackup && colorPaletteIndex == nil {
-                                isShowColorDataChangeAlert = true
+                            if colorPaletteIndex == nil {
+                                // カラーデータが変更された場合、その変更内容を保持するかアラート確認
+                                if colorState.colorDatas != colorDatasBackup {
+                                    isShowColorDataChangeAlert = true
+                                } else {
+                                    dismiss()
+                                }
                             } else {
+                                colorState.colorDatas = colorDatasBackup
                                 dismiss()
                             }
                         } label: {
@@ -79,12 +100,24 @@ struct ColorPickerView: View {
                     },
                     rightContent: {
                         if let index = colorPaletteIndex {
-                            NavigationLink(destination: ColorConfirmationView(colorState: colorState, colorPaletteIndex: index)) {
-                                Text("確認")
+                            // 編集
+                            Button {
+                                colorPalettes[index].colorDatas = colorState.colorDatas
+                                colorPalettes[index].updatedAt = Date()
+                                try? context.save()
+                                
+                                isShow = false
+                                success.toggle()
+                            } label: {
+                                Text("保存")
                             }
                         } else {
-                            NavigationLink(destination: ColorConfirmationView(colorState: colorState)) {
-                                Text("確認")
+                            // 追加
+                            Button {
+                                // 追加
+                                isShowPaletteThemeNameInputAlert = true
+                            } label: {
+                                Text("作成")
                             }
                         }
                     }
@@ -144,6 +177,28 @@ struct ColorPickerView: View {
         } message: {
             Text("現在作成中の配色を保持しますか？")
         }
+        // パレットテーマ入力アラート
+        .alert("テーマ名を入力してください。", isPresented: $isShowPaletteThemeNameInputAlert) {
+            TextField("テーマ名", text: $paletteThemeName)
+                .onChange(of: paletteThemeName) {
+                    // 最大桁数6桁を超えた場合、テキストを切り詰める
+                    if paletteThemeName.count > 15 {
+                        paletteThemeName = String(paletteThemeName.prefix(15))
+                    }
+                }
+            
+            Button("キャンセル") {
+                isShowPaletteThemeNameInputAlert = false
+            }
+            Button("OK") {
+                context.insert(ColorPalette(colorDatas: colorState.colorDatas,
+                                            themeName: paletteThemeName))
+                isShowPaletteThemeNameInputAlert = false
+                isShow = false
+                success.toggle()
+            }
+        }
+        .sensoryFeedback(.success, trigger: success)
         
 //        .onChange(of: scenePhase) {
 //            if scenePhase == .background {
@@ -282,10 +337,14 @@ struct ColorPickerView: View {
 }
 
 #Preview {
-    ColorPickerView(colorState: ColorPickerViewState(colorDatas: [
-        ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.7)),
-        ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.0, brightness: 1.0)),
-        ColorData(hsb: HSBColor(hue: 0.9, saturation: 0.5, brightness: 0.7)),
-    ]))
+    @State var isShowColorPickerView: Bool = true
+    
+    return VStack {
+        ColorPickerView(colorState: ColorPickerViewState(colorDatas: [
+        ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.5)),
+        ColorData(hsb: HSBColor(hue: 0.3, saturation: 0.5, brightness: 0.2)),
+        ColorData(hsb: HSBColor(hue: 0.2, saturation: 0.5, brightness: 0.8)),
+    ]), isShow: $isShowColorPickerView)
         .environmentObject(GlobalSettings())
+    }
 }

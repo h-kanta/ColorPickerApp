@@ -13,12 +13,29 @@ struct ColorPaletteView: View {
     // SwiftData のデータを使用
     @Environment(\.modelContext) private var context
     // ColorPalette のデータを取得するために宣言
+//    @Query(sort: \ColorPalette.createdAt, order: .reverse) private var colorPalettes: [ColorPalette]
     @Query private var colorPalettes: [ColorPalette]
+    
+    
+    // お気に入り順で表示させる方法を考える。
+    // SwiftData は、Bool値ではソートできない？
     
     // 削除アラート
     @State var isShowDeleteAlert: Bool = false
     // 削除するパレット
     @State var paletteDeleteTarget: ColorPalette?
+    // テーマ名編集アラート
+    @State var isShowPaletteNameEditAlert: Bool = false
+    // テーマ名を編集するパレット
+    @State var paletteNameEditTarget: ColorPalette?
+    // テーマ名入力テキスト
+    @State var paletteThemeNameText: String = ""
+    
+    // カラーピッカービュー遷移
+    @State var isShowColorPickerView: Bool = false
+    
+    // 触覚フィードバック
+    @State var success: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -48,7 +65,9 @@ struct ColorPaletteView: View {
                         VStack(spacing: 30) {
                             ForEach(Array(colorPalettes.enumerated()), id: \.offset) { index, colorPalette in
                                 colorPaletteCardView(colorPalette: colorPalette,
-                                                     colorPaletteIndex: index)
+                                                     colorPaletteIndex: index,
+                                                     colorState: ColorPickerViewState(colorDatas: colorPalette.colorDatas),
+                                                     paletteThemeName: colorPalette.themeName)
                             }
                         }
                         .padding()
@@ -57,73 +76,126 @@ struct ColorPaletteView: View {
             }
         }
         // パレット削除アラート
-        .alert("パレット削除", isPresented: $isShowDeleteAlert) {
+        .alert("本当に削除しますか？", isPresented: $isShowDeleteAlert) {
             Button("キャンセル", role: .cancel) {
                 isShowDeleteAlert = false
             }
-            Button("OK", role: .destructive) {
+            Button("削除", role: .destructive) {
                 if let colorPalette = paletteDeleteTarget {
                     context.delete(colorPalette)
+                    success.toggle()
                 }
             }
         } message: {
-            Text("このパレットを削除します。元に戻すことはできません。よろしいですか？")
+            Text("削除したパレットを後から復元することはできません。")
         }
+        // パレットテーマ名編集アラート
+        .alert("テーマ名を入力してください。", isPresented: $isShowPaletteNameEditAlert) {
+            TextField("テーマ名", text: $paletteThemeNameText)
+                .onChange(of: paletteThemeNameText) {
+                    // 最大桁数6桁を超えた場合、テキストを切り詰める
+                    if paletteThemeNameText.count > 15 {
+                        paletteThemeNameText = String(paletteThemeNameText.prefix(15))
+                    }
+                }
+            
+            Button("キャンセル") {
+                isShowPaletteNameEditAlert = false
+            }
+            Button("OK") {
+                // 編集
+                if let palette = paletteNameEditTarget {
+                    palette.themeName = paletteThemeNameText
+                    palette.updatedAt = Date()
+                    try? context.save()
+                }
+                
+                isShowPaletteNameEditAlert = false
+                success.toggle()
+            }
+        }
+        .sensoryFeedback(.success, trigger: success)
     }
     
     // MARK: カラーパレットカード
     @ViewBuilder
-    func colorPaletteCardView(colorPalette: ColorPalette, colorPaletteIndex: Int) -> some View {
+    func colorPaletteCardView(colorPalette: ColorPalette, 
+                              colorPaletteIndex: Int,
+                              colorState: ColorPickerViewState,
+                              paletteThemeName: String) -> some View {
         ZStack {
             Rectangle()
                 .foregroundStyle(.white)
                 .cornerRadius(10)
-                .shadow(color: Color("Shadow2").opacity(0.20), radius: 10, x: -5, y: -3)
-                .shadow(color: Color("Shadow2").opacity(0.20), radius: 10, x: 5, y: 3)
+                .shadow(color: Color("Shadow2").opacity(0.2), radius: 10, x: 5, y: 5)
             
             VStack(spacing: 0) {
                 // メニュー
                 HStack {
+                    // テーマ名
+                    Text(colorPalette.themeName)
+                        .font(.subheadline)
+                    
+                    Spacer()
+                    
                     // お気に入り
                     if colorPalette.isFavorite {
                         Image(systemName: Icon.favorite.symbolName() + ".fill")
                             .foregroundStyle(.red)
                             .font(.title)
+                            .onTapGesture {
+                                withAnimation(.spring) {
+                                    paletteFavoriteUpdate(colorPalette: colorPalette)
+                                }
+                            }
                     } else {
                         Image(systemName: Icon.favorite.symbolName())
                             .foregroundStyle(.red)
                             .font(.title)
+                            .onTapGesture {
+                                withAnimation(.spring) {
+                                    paletteFavoriteUpdate(colorPalette: colorPalette)
+                                }
+                            }
                     }
                     
-                    Spacer()
+                    // パレット削除
+//                    Button {
+//                        paletteDelete(colorPalette: colorPalette)
+//                    } label: {
+//                        Image(systemName: Icon.trash.symbolName())
+//                            .foregroundStyle(.red)
+//                            .font(.title2)
+//                    }
                     
-                    Menu {
-                        // パレット編集
-                        Button {
-                            paletteEdit(colorPalette: colorPalette)
-                        } label: {
-                            Label("編集", systemImage: Icon.edit.symbolName())
-                        }
-                        
-                        // パレット削除
-                        Button(role: .destructive) {
-                            paletteDelete(colorPalette: colorPalette)
-                        } label: {
-                            Label("削除", systemImage: Icon.trash.symbolName())
-                        }
-                    } label: {
-                        Image(systemName: Icon.menu.symbolName())
-                            .font(.title)
-                            .foregroundStyle(.black)
-                            .contentShape(Circle())
-                    }
+//                    Menu {
+//                        // パレット編集
+//                        Button {
+//                            paletteEdit(colorState: colorState, index: colorPaletteIndex)
+//                        } label: {
+//                            Label("編集", systemImage: Icon.edit.symbolName())
+//                        }
+//                        
+//                        // パレット削除
+//                        Button(role: .destructive) {
+//                            paletteDelete(colorPalette: colorPalette)
+//                        } label: {
+//                            Label("削除", systemImage: Icon.trash.symbolName())
+//                        }
+//                    } label: {
+//                        Image(systemName: Icon.menu.symbolName())
+//                            .font(.title)
+//                            .foregroundStyle(.black)
+//                    }
+//                    .contentShape(Circle())
                 }
                 .padding()
                 
                 // パレット
-                NavigationLink(destination: ColorConfirmationView(
-                        colorState: ColorPickerViewState(colorDatas: colorPalette.colorDatas),
-                        colorPaletteIndex: colorPaletteIndex)) {
+                NavigationLink(destination: ColorPaletteConfirmationView(
+                        colorState: colorState,
+                        colorPaletteIndex: colorPaletteIndex,
+                        paletteThemeName: paletteThemeName)) {
                     GeometryReader { geometry in
                         HStack(spacing: 0) {
                             ForEach(colorPalette.colorDatas.indices, id: \.self) { index in
@@ -157,11 +229,46 @@ struct ColorPaletteView: View {
             }
         }
         .frame(height: 130)
+        // メニュー
+        .contextMenu {
+            // テーマ名編集
+            Button {
+                paletteThemeNameEdit(colorPalette: colorPalette)
+            } label: {
+                HStack {
+                    Text("テーマ名編集")
+                    Image(systemName: Icon.edit.symbolName())
+                }
+            }
+                        
+            // お気に入り
+            Button {
+                paletteFavoriteUpdate(colorPalette: colorPalette)
+            } label: {
+                HStack {
+                    Text(colorPalette.isFavorite ? "お気に入り解除" : "お気に入り")
+                    Image(systemName: Icon.favorite.symbolName())
+                }
+            }
+            
+            // 削除
+            Button(role: .destructive) {
+                paletteDelete(colorPalette: colorPalette)
+            } label: {
+                HStack {
+                    Text("削除")
+                        .foregroundStyle(.red)
+                    Image(systemName: Icon.trash.symbolName())
+                }
+            }
+        }
     }
     
-    // MARK: パレット編集
-    private func paletteEdit(colorPalette: ColorPalette) {
-        
+    // MARK: パレットテーマ名編集
+    private func paletteThemeNameEdit(colorPalette: ColorPalette) {
+        paletteNameEditTarget = colorPalette
+        paletteThemeNameText = colorPalette.themeName
+        isShowPaletteNameEditAlert = true
     }
     
     // MARK: パレット削除
@@ -169,8 +276,23 @@ struct ColorPaletteView: View {
         paletteDeleteTarget = colorPalette
         isShowDeleteAlert = true
     }
+    
+    // MARK: パレットお気に入り更新
+    private func paletteFavoriteUpdate(colorPalette: ColorPalette) {
+        if colorPalette.isFavorite {
+            colorPalette.isFavorite = false
+            colorPalette.updatedAt = Date()
+        } else {
+            colorPalette.isFavorite = true
+            colorPalette.updatedAt = Date()
+        }
+        
+        try? context.save()
+    }
 }
 
 #Preview {
-    ColorPaletteView()
+    ContentView()
+        .environmentObject(GlobalSettings())
+        .modelContainer(for: [ColorPalette.self, ColorStorage.self])
 }

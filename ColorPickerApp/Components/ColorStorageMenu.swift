@@ -52,7 +52,7 @@ struct ColorStorageMenu: View {
                     .background {
                         Circle()
                             .frame(width: shared.hueBarSize * 0.2, height: shared.hueBarSize * 0.2)
-                            .foregroundStyle(.black.opacity(0.1))
+                            .foregroundStyle(.black.opacity(0.05))
                     }
                 
             }

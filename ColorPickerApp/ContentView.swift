@@ -19,7 +19,10 @@ struct ContentView: View {
         ColorData(rgb: RGBColor(red: 254/255, green: 244/255, blue: 244/255)),
     ])
     
-    @State var currentTab: Tab = .home
+    @State var currentTab: Tab = .palette
+    
+    // カラーピッカービュー表示
+    @State var isShowColorPickerView: Bool = false
     
     init() {
         UITabBar.appearance().isHidden = true
@@ -42,24 +45,24 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             TabView(selection: $currentTab) {
-                HomeView()
-                    .tag(Tab.home)
+//                HomeView()
+//                    .tag(Tab.home)
                 ColorPaletteView()
                     .tag(Tab.palette)
                     .padding(.bottom, 60)
                 ColorStorageView()
                     .tag(Tab.favoriteColor)
-                OptionView()
-                    .tag(Tab.option)
+//                OptionView()
+//                    .tag(Tab.option)
             }
             
-            CustomTabBar(currentTab: $currentTab, showColorPicker: $colorState.showColorPickerView)
+            CustomTabBar(currentTab: $currentTab, isShowColorPickerView: $isShowColorPickerView)
                 .environmentObject(GlobalSettings())
                 .frame(maxHeight: .infinity, alignment: .bottom)
         }
-        .fullScreenCover(isPresented: $colorState.showColorPickerView) {
+        .fullScreenCover(isPresented: $isShowColorPickerView) {
             // ここに全画面で表示するモーダルの内容を配置
-            ColorPickerView(colorState: colorState)
+            ColorPickerView(colorState: colorState, isShow: $isShowColorPickerView)
                 .environmentObject(GlobalSettings())
         }
     }

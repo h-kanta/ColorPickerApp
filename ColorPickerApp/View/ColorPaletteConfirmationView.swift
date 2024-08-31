@@ -2,13 +2,13 @@
 //  ColorConfirmationView.swift
 //  ColorPickerApp
 //
-//  Created by 堀川貫太 on 2024/08/06.
+//  Created by 堀川貫太 on 2024/08/019.
 //
 
 import SwiftUI
 import SwiftData
 
-struct ColorConfirmationView: View {
+struct ColorPaletteConfirmationView: View {
     @Environment(\.dismiss) private var dismiss
     // SwiftData 用
     @Environment(\.modelContext) private var context
@@ -20,16 +20,14 @@ struct ColorConfirmationView: View {
     
     // カラーデータ
     @ObservedObject var colorState: ColorPickerViewState
+    
     // カラーピッカー遷移
     @State var isShowColorPickerView: Bool = false
     
     // カラーパレットインデックス
-    @State var colorPaletteIndex: Int?
-    
-    // パレットテーマ入力アラート表示
-    @State var isShowPaletteThemeNameInputAlert: Bool = false
-    // パレットテーマ
-    @State var paletteThemeName: String = ""
+    var colorPaletteIndex: Int
+    // パレットテーマ名
+    var paletteThemeName: String
     
     var body: some View {
         NavigationStack {
@@ -45,24 +43,16 @@ struct ColorConfirmationView: View {
                         }
                     },
                     centerContent: {
-                        Text("配色確認")
+                        Text(paletteThemeName)
+                            .font(.callout)
                     },
                     rightContent: {
                         Button {
-                            if let index = colorPaletteIndex {
-                                // 編集
-                                colorPalettes[index].colorDatas = colorState.colorDatas
-                                colorPalettes[index].updatedAt = Date()
-                                try? context.save()
-                                
-//                                colorState.showColorPickerView = false
-                            } else {
-                                // 追加
-                                isShowPaletteThemeNameInputAlert = true
-                            }
+                            isShowColorPickerView = true
                         } label: {
-                            Text("完了")
+                            Text("編集")
                         }
+                        
                     }
                 )
                 .padding(.bottom)
@@ -109,18 +99,12 @@ struct ColorConfirmationView: View {
             }
         }
         .navigationBarBackButtonHidden()
-        // パレットテーマ入力アラート
-        .alert("テーマ名を入力してください。", isPresented: $isShowPaletteThemeNameInputAlert) {
-            TextField("テーマ名", text: $paletteThemeName)
-            
-            Button("キャンセル", role: .cancel) {
-                isShowPaletteThemeNameInputAlert = false
-            }
-            Button("OK") {
-                context.insert(ColorPalette(colorDatas: colorState.colorDatas,
-                                            themeName: paletteThemeName))
-                isShowPaletteThemeNameInputAlert = false
-            }
+        .fullScreenCover(isPresented: $isShowColorPickerView) {
+            // ここに全画面で表示するモーダルの内容を配置
+            ColorPickerView(colorState: colorState,
+                            isShow: $isShowColorPickerView,
+                            colorPaletteIndex: colorPaletteIndex)
+                .environmentObject(GlobalSettings())
         }
     }
     
@@ -176,10 +160,10 @@ struct ColorConfirmationView: View {
 
 
 #Preview {
-    ColorConfirmationView(colorState: ColorPickerViewState(colorDatas: [
+    ColorPaletteConfirmationView(colorState: ColorPickerViewState(colorDatas: [
         ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.7)),
         ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.0, brightness: 1.0)),
         ColorData(hsb: HSBColor(hue: 0.9, saturation: 0.5, brightness: 0.7)),
-    ]))
+    ]), colorPaletteIndex: 0, paletteThemeName: "テーマ名")
         .environmentObject(GlobalSettings())
 }
