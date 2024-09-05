@@ -18,6 +18,9 @@ struct HSBColorPickerView: View {
     
     @State private var isDragging: Bool = false
     
+    // 触覚フィードバック
+    @State private var success: Bool = false
+    
     var body: some View {
         VStack {
             // MARK: 色相
@@ -137,7 +140,8 @@ struct HSBColorPickerView: View {
                         // コピーボタン
                         Button {
                             UIPasteboard.general.string = colorState.colorDatas[colorState.selectedIndex].hex.code
-                            print(colorState.colorDatas[colorState.selectedIndex].hex.code)
+                            
+                            success.toggle()
                         } label: {
                             Image(systemName: Icon.copy.symbolName())
                                 .font(.title3)
@@ -153,6 +157,7 @@ struct HSBColorPickerView: View {
             
             HSBSlider()
         }
+        .sensoryFeedback(.success, trigger: success)
     }
     
     // MARK: 彩度、明度スライダー

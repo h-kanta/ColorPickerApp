@@ -27,7 +27,7 @@ extension Tab {
         case .paletteCreate:
             return ""
         case .favoriteColor:
-            return "保存済み色"
+            return "保存済みカラー"
 //        case .option:
 //            return "設定"
         }
@@ -66,7 +66,7 @@ extension Tab {
     }
 }
 
-// MARK: カラーピッカー用のタブ
+// MARK: カラーピッカー用タブ
 enum ColorPickerTab: CaseIterable {
     case hsb
     case rgb
@@ -79,6 +79,23 @@ extension ColorPickerTab {
             return "HSB"
         case .rgb:
             return "RGB"
+        }
+    }
+}
+
+// MARK: カラーパレット用タブ
+enum ColorPaletteTab: CaseIterable {
+    case all
+    case favorite
+}
+
+extension ColorPaletteTab {
+    func tabName() -> String {
+        switch self {
+        case .all:
+            return "すべて"
+        case .favorite:
+            return "お気に入り"
         }
     }
 }

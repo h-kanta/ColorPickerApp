@@ -10,10 +10,10 @@ import SwiftUI
 struct RGBColorPickerView: View {
     
     @ObservedObject var colorState: ColorPickerViewState
-    
     @EnvironmentObject private var shared: GlobalSettings
     
-    @State private var value: Int = 0
+    // 触覚フィードバック
+    @State private var success: Bool = false
     
     var body: some View {
         VStack {
@@ -78,6 +78,8 @@ struct RGBColorPickerView: View {
                 // コピーボタン
                 Button {
                     UIPasteboard.general.string = colorState.colorDatas[colorState.selectedIndex].rgb.redByteScaleValue.description
+                    
+                    success.toggle()
                 } label: {
                     Image(systemName: Icon.copy.symbolName())
                         .font(.title3)
@@ -116,6 +118,7 @@ struct RGBColorPickerView: View {
             }
         }
         .padding(.bottom, shared.screenHeight * 0.02)
+        .sensoryFeedback(.success, trigger: success)
         
         // MARK: Green
         VStack(spacing: 0) {
@@ -169,6 +172,8 @@ struct RGBColorPickerView: View {
                 Button {
                     UIPasteboard.general.string =
                         colorState.colorDatas[colorState.selectedIndex].rgb.greenByteScaleValue.description
+                    
+                    success.toggle()
                 } label: {
                     Image(systemName: Icon.copy.symbolName())
                         .font(.title3)
@@ -261,6 +266,8 @@ struct RGBColorPickerView: View {
                 Button {
                     UIPasteboard.general.string =
                         colorState.colorDatas[colorState.selectedIndex].rgb.blueByteScaleValue.description
+                    
+                    success.toggle()
                 } label: {
                     Image(systemName: Icon.copy.symbolName())
                         .font(.title3)

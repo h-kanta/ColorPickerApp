@@ -13,12 +13,7 @@ struct ColorPaletteView: View {
     // SwiftData のデータを使用
     @Environment(\.modelContext) private var context
     // ColorPalette のデータを取得するために宣言
-//    @Query(sort: \ColorPalette.createdAt, order: .reverse) private var colorPalettes: [ColorPalette]
-    @Query private var colorPalettes: [ColorPalette]
-    
-    
-    // お気に入り順で表示させる方法を考える。
-    // SwiftData は、Bool値ではソートできない？
+    @Query(sort: \ColorPalette.createdAt, order: .reverse) private var colorPalettes: [ColorPalette]
     
     // 削除アラート
     @State var isShowDeleteAlert: Bool = false
@@ -33,6 +28,11 @@ struct ColorPaletteView: View {
     
     // カラーピッカービュー遷移
     @State var isShowColorPickerView: Bool = false
+    
+    // 選択タブ
+    @State var currentTab: ColorPaletteTab = .all
+    // タブエフェクト
+    @Namespace private var animation
     
     // 触覚フィードバック
     @State var success: Bool = false
@@ -49,28 +49,45 @@ struct ColorPaletteView: View {
                         },
                         // 中央
                         centerContent: {
-                            Text("配色一覧")
+                            Text("配色")
                         },
                         // 右
                         rightContent: {
-                            Button {
-                                
-                            } label: {
-                                Image(systemName: Icon.sort.symbolName())
-                            }
+                            Spacer()
                         }
                     )
                     
-                    ScrollView {
-                        VStack(spacing: 30) {
-                            ForEach(Array(colorPalettes.enumerated()), id: \.offset) { index, colorPalette in
-                                colorPaletteCardView(colorPalette: colorPalette,
-                                                     colorPaletteIndex: index,
-                                                     colorState: ColorPickerViewState(colorDatas: colorPalette.colorDatas),
-                                                     paletteThemeName: colorPalette.themeName)
+                    // MARK: タブ
+                    ColorPaletteTabView()
+                    
+                    // タブに応じて切り替える
+                    switch currentTab {
+                    case .all: // HSB
+                        ScrollView {
+                            VStack(spacing: 30) {
+                                ForEach(Array(colorPalettes.enumerated()), id: \.offset) { index, colorPalette in
+                                    colorPaletteCardView(colorPalette: colorPalette,
+                                                         colorPaletteId: colorPalette.id,
+                                                         colorState: ColorPickerViewState(colorDatas: colorPalette.colorDatas),
+                                                         paletteThemeName: colorPalette.themeName)
+                                }
                             }
+                            .padding()
                         }
-                        .padding()
+                    case .favorite: // RGB
+                        ScrollView {
+                            VStack(spacing: 30) {
+                                ForEach(Array(colorPalettes.enumerated()), id: \.offset) { index, colorPalette in
+                                    if colorPalette.isFavorite {
+                                        colorPaletteCardView(colorPalette: colorPalette,
+                                                             colorPaletteId: colorPalette.id,
+                                                             colorState: ColorPickerViewState(colorDatas: colorPalette.colorDatas),
+                                                             paletteThemeName: colorPalette.themeName)
+                                    }
+                                }
+                            }
+                            .padding()
+                        }
                     }
                 }
             }
@@ -120,7 +137,7 @@ struct ColorPaletteView: View {
     // MARK: カラーパレットカード
     @ViewBuilder
     func colorPaletteCardView(colorPalette: ColorPalette, 
-                              colorPaletteIndex: Int,
+                              colorPaletteId: String,
                               colorState: ColorPickerViewState,
                               paletteThemeName: String) -> some View {
         ZStack {
@@ -194,7 +211,7 @@ struct ColorPaletteView: View {
                 // パレット
                 NavigationLink(destination: ColorPaletteConfirmationView(
                         colorState: colorState,
-                        colorPaletteIndex: colorPaletteIndex,
+                        colorPaletteId: colorPaletteId,
                         paletteThemeName: paletteThemeName)) {
                     GeometryReader { geometry in
                         HStack(spacing: 0) {
@@ -264,6 +281,35 @@ struct ColorPaletteView: View {
         }
     }
     
+    // MARK: カラーピッカータブビュー
+    @ViewBuilder
+    func ColorPaletteTabView() -> some View {
+        HStack {
+            ForEach(ColorPaletteTab.allCases, id: \.hashValue) { tab in
+                Text(tab.tabName())
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(currentTab == tab ? .back : .black)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 24)
+                    .background {
+                        if currentTab == tab {
+                            Capsule()
+                                .matchedGeometryEffect(id: "TAB", in: animation)
+                        } else {
+                            Capsule()
+                                .stroke(.black)
+                        }
+                    }
+                    .contentShape(Capsule())
+                    .animation(.spring(), value: currentTab)
+                    .onTapGesture {
+                        currentTab = tab
+                    }
+            }
+        }
+    }
+    
     // MARK: パレットテーマ名編集
     private func paletteThemeNameEdit(colorPalette: ColorPalette) {
         paletteNameEditTarget = colorPalette
@@ -288,6 +334,7 @@ struct ColorPaletteView: View {
         }
         
         try? context.save()
+        success.toggle()
     }
 }
 

@@ -36,19 +36,17 @@ struct ColorPickerView: View {
     
     // カラーピッカー画面表示
     @Binding var isShow: Bool
-    // カラーパレットインデックス
-    @State var colorPaletteIndex: Int?
+    // カラーパレットId
+    @State var colorPaletteId: String?
     
     // パレットテーマ入力アラート表示
     @State var isShowPaletteThemeNameInputAlert: Bool = false
     // パレットテーマ
     @State var paletteThemeName: String = ""
-    
-    // カラー選択画面表示
-    @State var isShowSelectedColorView: Bool = false
 
     // 触覚フォードバック
     @State var success: Bool = false
+    @State var selection: Bool = false
     
     // カラープレビューをドラッグしたかどうか
     //@State var isDragColor: Bool = false
@@ -79,7 +77,7 @@ struct ColorPickerView: View {
                 CustomNavigationBarContainer (
                     leftContent: {
                         Button {
-                            if colorPaletteIndex == nil {
+                            if colorPaletteId == nil {
                                 // カラーデータが変更された場合、その変更内容を保持するかアラート確認
                                 if colorState.colorDatas != colorDatasBackup {
                                     isShowColorDataChangeAlert = true
@@ -92,22 +90,36 @@ struct ColorPickerView: View {
                             }
                         } label: {
                             Image(systemName: Icon.close.symbolName())
-                                .font(.title)
                         }
                     },
                     centerContent: {
-                        Text("カラーピッカー")
+                        if let id = colorPaletteId, 
+                            let colorPalette = colorPalettes.first(where: { $0.id == id }) {
+                            Text(colorPalette.themeName)
+                                .font(.callout)
+                        } else {
+                            Text("新規")
+                        }
                     },
                     rightContent: {
-                        if let index = colorPaletteIndex {
+                        if let id = colorPaletteId {
                             // 編集
                             Button {
-                                colorPalettes[index].colorDatas = colorState.colorDatas
-                                colorPalettes[index].updatedAt = Date()
-                                try? context.save()
+                                // 編集するパレットを取得
+                                let colorPalette = colorPalettes.first(where: { $0.id == id })
                                 
-                                isShow = false
-                                success.toggle()
+                                if let colorPalette = colorPalette {
+                                    // パレット取得成功
+                                    colorPalette.colorDatas = colorState.colorDatas
+                                    colorPalette.updatedAt = Date()
+                                    try? context.save()
+                                    
+                                    isShow = false
+                                    success.toggle()
+                                } else {
+                                    // パレット取得失敗
+                                    isShow = false
+                                }
                             } label: {
                                 Text("保存")
                             }
@@ -199,6 +211,7 @@ struct ColorPickerView: View {
             }
         }
         .sensoryFeedback(.success, trigger: success)
+        .sensoryFeedback(.selection, trigger: selection)
         
 //        .onChange(of: scenePhase) {
 //            if scenePhase == .background {
@@ -253,6 +266,7 @@ struct ColorPickerView: View {
                             .cornerRadius(10, corners: [.topLeft, .bottomLeft])
                             .onTapGesture {
                                 colorState.selectedIndex = 0
+                                selection.toggle()
                             }
                         Text("M")
                     }
@@ -265,6 +279,7 @@ struct ColorPickerView: View {
                             .frame(width: geometry.size.width*0.1)
                             .onTapGesture {
                                 colorState.selectedIndex = 1
+                                selection.toggle()
                             }
                         Text("A")
                     }
@@ -278,6 +293,7 @@ struct ColorPickerView: View {
                             .cornerRadius(10, corners: [.topRight, .bottomRight])
                             .onTapGesture {
                                 colorState.selectedIndex = 2
+                                selection.toggle()
                             }
                         Text("B")
                     }

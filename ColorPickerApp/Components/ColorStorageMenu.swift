@@ -19,8 +19,14 @@ struct ColorStorageMenu: View {
     // カラーデータ
     @ObservedObject var colorState: ColorPickerViewState
     
+    // カラー選択画面表示
+    @State var isShowSelectedColorView: Bool = false
+    
     // カラーストレージ保存時、同じカラーが存在している場合のアラート
     @State var isShowDuplicateColorAlert: Bool = false
+    
+    // 触覚フィードバック
+    @State private var success: Bool = false
     
     var body: some View {
         Menu() {
@@ -57,12 +63,18 @@ struct ColorStorageMenu: View {
                 
             }
         }
+        // カラー選択
+        .sheet(isPresented: $isShowSelectedColorView) {
+            SelectedColorView(colorState: colorState)
+                .presentationDetents([.medium])
+        }
         // カラーストレージ重複アラート
         .alert("重複カラー", isPresented: $isShowDuplicateColorAlert) {
             
         } message: {
             Text("このカラーは既に保存されています。")
         }
+        .sensoryFeedback(.success, trigger: success)
     }
     
     // MARK: カラーストレージ保存処理
@@ -78,11 +90,13 @@ struct ColorStorageMenu: View {
             green: colorState.colorDatas[colorState.selectedIndex].rgb.green,
             blue: colorState.colorDatas[colorState.selectedIndex].rgb.blue)
         ))
+        
+        success.toggle()
     }
     
     // MARK: カラーストレージ選択処理
     func selectedColorStorage() {
-        
+        isShowSelectedColorView = true
     }
 }
 

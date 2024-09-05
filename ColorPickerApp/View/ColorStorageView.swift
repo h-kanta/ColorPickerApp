@@ -20,6 +20,9 @@ struct ColorStorageView: View {
     // グリッドカラム設定
     let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 4)
     
+    // 触覚フィードバック
+    @State private var success: Bool = false
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -36,11 +39,7 @@ struct ColorStorageView: View {
                         },
                         // 右
                         rightContent: {
-                            Button {
-                                
-                            } label: {
-                                Image(systemName: Icon.sort.symbolName())
-                            }
+                            Spacer()
                         }
                     )
                     
@@ -58,7 +57,6 @@ struct ColorStorageView: View {
                 }
             }
             .frame(maxHeight: .infinity)
-            .padding(.bottom, 65)
         }
         // カラー削除アラート
         .alert("本当に削除しますか？", isPresented: $isShowColorDeleteAlert) {
@@ -68,11 +66,13 @@ struct ColorStorageView: View {
             Button("削除", role: .destructive) {
                 if let color = colorDeleteTarget {
                     context.delete(color)
+                    success.toggle()
                 }
             }
         } message: {
             Text("削除したカラーを後から復元することはできません。")
         }
+        .sensoryFeedback(.success, trigger: success)
     }
     
     //
@@ -80,8 +80,8 @@ struct ColorStorageView: View {
         VStack(spacing: 8) {
             // カラー
             Circle()
-                .frame(width: (geometry.size.width - 60) / 5,
-                       height: (geometry.size.width - 60) / 5) // 60は各アイテムの間隔を考慮
+                .frame(width: (abs(geometry.size.width - 60)) / 5,
+                       height: (abs(geometry.size.width - 60)) / 5) // 60は各アイテムの間隔を考慮
                 .foregroundStyle(Color(red: color.rgbColor.red,
                                        green: color.rgbColor.green,
                                        blue: color.rgbColor.blue))
@@ -100,6 +100,7 @@ struct ColorStorageView: View {
             Button {
                 let code: String = color.rgbColor.toHEX().code
                 UIPasteboard.general.string = code
+                success.toggle()
                 print(code)
             } label: {
                 HStack {

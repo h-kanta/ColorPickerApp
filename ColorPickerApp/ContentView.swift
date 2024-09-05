@@ -52,6 +52,7 @@ struct ContentView: View {
                     .padding(.bottom, 60)
                 ColorStorageView()
                     .tag(Tab.favoriteColor)
+                    .padding(.bottom, 60)
 //                OptionView()
 //                    .tag(Tab.option)
             }

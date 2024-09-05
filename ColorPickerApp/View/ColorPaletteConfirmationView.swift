@@ -25,7 +25,7 @@ struct ColorPaletteConfirmationView: View {
     @State var isShowColorPickerView: Bool = false
     
     // カラーパレットインデックス
-    var colorPaletteIndex: Int
+    var colorPaletteId: String
     // パレットテーマ名
     var paletteThemeName: String
     
@@ -39,7 +39,6 @@ struct ColorPaletteConfirmationView: View {
                             dismiss()
                         } label: {
                             Image(systemName: Icon.back.symbolName())
-                                .font(.title)
                         }
                     },
                     centerContent: {
@@ -103,7 +102,7 @@ struct ColorPaletteConfirmationView: View {
             // ここに全画面で表示するモーダルの内容を配置
             ColorPickerView(colorState: colorState,
                             isShow: $isShowColorPickerView,
-                            colorPaletteIndex: colorPaletteIndex)
+                            colorPaletteId: colorPaletteId)
                 .environmentObject(GlobalSettings())
         }
     }
@@ -164,6 +163,6 @@ struct ColorPaletteConfirmationView: View {
         ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.7)),
         ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.0, brightness: 1.0)),
         ColorData(hsb: HSBColor(hue: 0.9, saturation: 0.5, brightness: 0.7)),
-    ]), colorPaletteIndex: 0, paletteThemeName: "テーマ名")
+    ]), colorPaletteId: "", paletteThemeName: "テーマ名")
         .environmentObject(GlobalSettings())
 }
