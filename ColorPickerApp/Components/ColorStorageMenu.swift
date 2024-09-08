@@ -25,6 +25,9 @@ struct ColorStorageMenu: View {
     // カラーストレージ保存時、同じカラーが存在している場合のアラート
     @State var isShowDuplicateColorAlert: Bool = false
     
+    // トースト
+    @Binding var pickerToast: Toast?
+    
     // 触覚フィードバック
     @State private var success: Bool = false
     
@@ -92,6 +95,8 @@ struct ColorStorageMenu: View {
         ))
         
         success.toggle()
+        // トースト表示
+        pickerToast = Toast(style: .success, message: "カラーを保存しました。")
     }
     
     // MARK: カラーストレージ選択処理
@@ -101,10 +106,14 @@ struct ColorStorageMenu: View {
 }
 
 #Preview {
-    ColorStorageMenu(colorState: ColorPickerViewState(colorDatas: [
-        ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.7)),
-        ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.0, brightness: 1.0)),
-        ColorData(hsb: HSBColor(hue: 0.9, saturation: 0.5, brightness: 0.7)),
-    ]))
-    .environmentObject(GlobalSettings())
+    @State var toast: Toast? = nil
+    
+    return VStack {
+        ColorStorageMenu(colorState: ColorPickerViewState(colorDatas: [
+            ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.7)),
+            ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.0, brightness: 1.0)),
+            ColorData(hsb: HSBColor(hue: 0.9, saturation: 0.5, brightness: 0.7)),
+        ]), pickerToast: $toast)
+        .environmentObject(GlobalSettings())
+    }
 }

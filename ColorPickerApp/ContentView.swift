@@ -24,6 +24,9 @@ struct ContentView: View {
     // カラーピッカービュー表示
     @State var isShowColorPickerView: Bool = false
     
+    // トースト
+    @State private var toast: Toast? = nil
+    
     init() {
         UITabBar.appearance().isHidden = true
         // TabBarAppearanceの設定
@@ -63,9 +66,12 @@ struct ContentView: View {
         }
         .fullScreenCover(isPresented: $isShowColorPickerView) {
             // ここに全画面で表示するモーダルの内容を配置
-            ColorPickerView(colorState: colorState, isShow: $isShowColorPickerView)
+            ColorPickerView(colorState: colorState,
+                            isShow: $isShowColorPickerView,
+                            toast: $toast)
                 .environmentObject(GlobalSettings())
         }
+        .toastView(toast: $toast)
     }
     
 }

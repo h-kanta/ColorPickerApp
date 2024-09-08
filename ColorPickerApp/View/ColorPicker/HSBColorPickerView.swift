@@ -20,6 +20,9 @@ struct HSBColorPickerView: View {
     
     // 触覚フィードバック
     @State private var success: Bool = false
+    // トースト
+    @Binding var pickerToast: Toast?
+    
     
     var body: some View {
         VStack {
@@ -98,7 +101,7 @@ struct HSBColorPickerView: View {
                     
                 VStack(spacing: 8) {
                     // MARK: カラーストレージメニュー
-                    ColorStorageMenu(colorState: colorState)
+                    ColorStorageMenu(colorState: colorState, pickerToast: $pickerToast)
                         .environmentObject(GlobalSettings())
                     
                     // MARK: HEX
@@ -142,6 +145,7 @@ struct HSBColorPickerView: View {
                             UIPasteboard.general.string = colorState.colorDatas[colorState.selectedIndex].hex.code
                             
                             success.toggle()
+                            pickerToast = Toast(style: .success, message: "コピーしました。")
                         } label: {
                             Image(systemName: Icon.copy.symbolName())
                                 .font(.title3)
@@ -422,13 +426,14 @@ struct HSBColorPickerView: View {
 
 #Preview {
     @State var isShowColorPickerView: Bool = true
+    @State var toast: Toast? = nil
     
     return VStack {
         ColorPickerView(colorState: ColorPickerViewState(colorDatas: [
         ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.5)),
         ColorData(hsb: HSBColor(hue: 0.3, saturation: 0.5, brightness: 0.2)),
         ColorData(hsb: HSBColor(hue: 0.2, saturation: 0.5, brightness: 0.8)),
-    ]), isShow: $isShowColorPickerView)
+        ]), isShow: $isShowColorPickerView, toast: $toast)
         .environmentObject(GlobalSettings())
     }
 }

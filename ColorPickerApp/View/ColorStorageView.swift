@@ -20,6 +20,9 @@ struct ColorStorageView: View {
     // グリッドカラム設定
     let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 4)
     
+    // トースト
+    @State private var toast: Toast? = nil
+    
     // 触覚フィードバック
     @State private var success: Bool = false
     
@@ -67,11 +70,13 @@ struct ColorStorageView: View {
                 if let color = colorDeleteTarget {
                     context.delete(color)
                     success.toggle()
+                    toast = Toast(style: .success, message: "カラーを削除しました。")
                 }
             }
         } message: {
             Text("削除したカラーを後から復元することはできません。")
         }
+        .toastView(toast: $toast)
         .sensoryFeedback(.success, trigger: success)
     }
     
@@ -100,8 +105,9 @@ struct ColorStorageView: View {
             Button {
                 let code: String = color.rgbColor.toHEX().code
                 UIPasteboard.general.string = code
+                
                 success.toggle()
-                print(code)
+                toast = Toast(style: .success, message: "コピーしました。")
             } label: {
                 HStack {
                     Text("コピー")

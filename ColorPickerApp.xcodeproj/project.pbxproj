@@ -20,6 +20,8 @@
 		B77242892C1B238B00883A26 /* SpriteKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B77242882C1B238A00883A26 /* SpriteKitView.swift */; };
 		B772428C2C1B243700883A26 /* MyShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = B772428B2C1B243700883A26 /* MyShader.fsh */; };
 		B775EDD42C73714700077B6F /* ColorPaletteConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B775EDD32C73714700077B6F /* ColorPaletteConfirmationView.swift */; };
+		B78583F12C8AD5CC0095A40B /* ToastModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78583F02C8AD5CC0095A40B /* ToastModifier.swift */; };
+		B78583F32C8AD8670095A40B /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78583F22C8AD8670095A40B /* View.swift */; };
 		B786A8972BD001E9005338AE /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B786A8962BD001E9005338AE /* HomeView.swift */; };
 		B786A8992BD00233005338AE /* ColorPaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B786A8982BD00233005338AE /* ColorPaletteView.swift */; };
 		B786A89B2BD00256005338AE /* ColorStorageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B786A89A2BD00256005338AE /* ColorStorageView.swift */; };
@@ -47,6 +49,9 @@
 		B7F176092C835A28009F76E5 /* SelectedColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7F176082C835A28009F76E5 /* SelectedColorView.swift */; };
 		B7F262392C78D39A00BD3553 /* ColorPaletteViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7F262382C78D39A00BD3553 /* ColorPaletteViewState.swift */; };
 		B7F2623B2C78EA6100BD3553 /* PaletteSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7F2623A2C78EA6100BD3553 /* PaletteSort.swift */; };
+		B7F937712C89E405005CE7C0 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7F937702C89E405005CE7C0 /* Toast.swift */; };
+		B7F937732C89E430005CE7C0 /* ToastStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7F937722C89E430005CE7C0 /* ToastStyle.swift */; };
+		B7F937762C89E87E005CE7C0 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7F937752C89E87E005CE7C0 /* ToastView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +85,8 @@
 		B77242882C1B238A00883A26 /* SpriteKitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpriteKitView.swift; sourceTree = "<group>"; };
 		B772428B2C1B243700883A26 /* MyShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = MyShader.fsh; sourceTree = "<group>"; };
 		B775EDD32C73714700077B6F /* ColorPaletteConfirmationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPaletteConfirmationView.swift; sourceTree = "<group>"; };
+		B78583F02C8AD5CC0095A40B /* ToastModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastModifier.swift; sourceTree = "<group>"; };
+		B78583F22C8AD8670095A40B /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		B786A8962BD001E9005338AE /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		B786A8982BD00233005338AE /* ColorPaletteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPaletteView.swift; sourceTree = "<group>"; };
 		B786A89A2BD00256005338AE /* ColorStorageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorStorageView.swift; sourceTree = "<group>"; };
@@ -110,6 +117,9 @@
 		B7F176082C835A28009F76E5 /* SelectedColorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedColorView.swift; sourceTree = "<group>"; };
 		B7F262382C78D39A00BD3553 /* ColorPaletteViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPaletteViewState.swift; sourceTree = "<group>"; };
 		B7F2623A2C78EA6100BD3553 /* PaletteSort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaletteSort.swift; sourceTree = "<group>"; };
+		B7F937702C89E405005CE7C0 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
+		B7F937722C89E430005CE7C0 /* ToastStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastStyle.swift; sourceTree = "<group>"; };
+		B7F937752C89E87E005CE7C0 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +165,7 @@
 				B72C85A02BCB645B003DDBCE /* RGBColor.swift */,
 				B72C85A22BCB65CC003DDBCE /* HEXColor.swift */,
 				B792F5112C3C158E0011C57D /* ColorData.swift */,
+				B7F937702C89E405005CE7C0 /* Toast.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -197,6 +208,7 @@
 				B72C85A72BCBB850003DDBCE /* Tab.swift */,
 				B72C0EF32BDBECC600286F50 /* Icon.swift */,
 				B7F2623A2C78EA6100BD3553 /* PaletteSort.swift */,
+				B7F937722C89E430005CE7C0 /* ToastStyle.swift */,
 			);
 			path = Type;
 			sourceTree = "<group>";
@@ -209,6 +221,7 @@
 				B7A84E262BF63DF90068F78B /* ColorSlider.swift */,
 				B79E07942C69EA1B00F899E4 /* ColorStorageMenu.swift */,
 				B79145D32BD4C89200DCF552 /* RoundedCorner.swift */,
+				B7F937742C89E860005CE7C0 /* Toast */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -218,6 +231,7 @@
 			children = (
 				B79907DF2C32E28100CD6DF0 /* SKTexture.swift */,
 				B7EB59082C6CA708007A57D1 /* UINavigationController.swift */,
+				B78583F22C8AD8670095A40B /* View.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -296,6 +310,15 @@
 				B7E45DB72BC6CE58007FF3AE /* ColorPickerAppUITestsLaunchTests.swift */,
 			);
 			path = ColorPickerAppUITests;
+			sourceTree = "<group>";
+		};
+		B7F937742C89E860005CE7C0 /* Toast */ = {
+			isa = PBXGroup;
+			children = (
+				B7F937752C89E87E005CE7C0 /* ToastView.swift */,
+				B78583F02C8AD5CC0095A40B /* ToastModifier.swift */,
+			);
+			path = Toast;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -436,10 +459,12 @@
 				B7E45D992BC6CE56007FF3AE /* ColorPickerAppApp.swift in Sources */,
 				B7A147D52BE7C9F200D72811 /* Sample.swift in Sources */,
 				B72C85A12BCB645B003DDBCE /* RGBColor.swift in Sources */,
+				B7F937732C89E430005CE7C0 /* ToastStyle.swift in Sources */,
 				B786A8972BD001E9005338AE /* HomeView.swift in Sources */,
 				B792F5122C3C158E0011C57D /* ColorData.swift in Sources */,
 				B7F176092C835A28009F76E5 /* SelectedColorView.swift in Sources */,
 				B79B54AC2BF0A055001AE729 /* RGBColorPickerView.swift in Sources */,
+				B7F937762C89E87E005CE7C0 /* ToastView.swift in Sources */,
 				B72C85A82BCBB851003DDBCE /* Tab.swift in Sources */,
 				B72C85AA2BCBBC78003DDBCE /* CustomTabBar.swift in Sources */,
 				B72C859D2BCB6161003DDBCE /* ColorPalette.swift in Sources */,
@@ -447,15 +472,18 @@
 				B72C0EF22BDBE87000286F50 /* ColorPickerView.swift in Sources */,
 				B786A89D2BD00260005338AE /* OptionView.swift in Sources */,
 				B7AB99422C08B36E00B2B21A /* CustomNavigationBarContainer.swift in Sources */,
+				B78583F12C8AD5CC0095A40B /* ToastModifier.swift in Sources */,
 				B786A8992BD00233005338AE /* ColorPaletteView.swift in Sources */,
 				B79E07952C69EA1B00F899E4 /* ColorStorageMenu.swift in Sources */,
 				B7CC18EE2C1ED8890042C367 /* ColorPalettePreview.swift in Sources */,
 				B77242892C1B238B00883A26 /* SpriteKitView.swift in Sources */,
 				B7C597392C624AE200EC0D96 /* ColorConfirmationView.swift in Sources */,
+				B78583F32C8AD8670095A40B /* View.swift in Sources */,
 				B78804F42C02CC680070E9D6 /* GlobalSettings.swift in Sources */,
 				B72C85A52BCB7DC9003DDBCE /* ColorStorage.swift in Sources */,
 				B775EDD42C73714700077B6F /* ColorPaletteConfirmationView.swift in Sources */,
 				B79145D42BD4C89200DCF552 /* RoundedCorner.swift in Sources */,
+				B7F937712C89E405005CE7C0 /* Toast.swift in Sources */,
 				B72C859F2BCB620D003DDBCE /* HSBColor.swift in Sources */,
 				B7F2623B2C78EA6100BD3553 /* PaletteSort.swift in Sources */,
 				B72C85A32BCB65CC003DDBCE /* HEXColor.swift in Sources */,

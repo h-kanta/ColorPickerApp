@@ -34,6 +34,9 @@ struct ColorPaletteView: View {
     // タブエフェクト
     @Namespace private var animation
     
+    // トースト
+    @State private var toast: Toast? = nil
+    
     // 触覚フィードバック
     @State var success: Bool = false
     
@@ -101,6 +104,7 @@ struct ColorPaletteView: View {
                 if let colorPalette = paletteDeleteTarget {
                     context.delete(colorPalette)
                     success.toggle()
+                    toast = Toast(style: .success, message: "パレットを削除しました。")
                 }
             }
         } message: {
@@ -125,12 +129,15 @@ struct ColorPaletteView: View {
                     palette.themeName = paletteThemeNameText
                     palette.updatedAt = Date()
                     try? context.save()
+                    
+                    toast = Toast(style: .success, message: "テーマ名を編集しました。")
                 }
                 
                 isShowPaletteNameEditAlert = false
                 success.toggle()
             }
         }
+        .toastView(toast: $toast)
         .sensoryFeedback(.success, trigger: success)
     }
     

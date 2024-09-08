@@ -15,6 +15,9 @@ struct ColorPaletteConfirmationView: View {
     // ColorPalette のデータを取得するために宣言
     @Query private var colorPalettes: [ColorPalette]
     
+    // トースト
+    @State private var toast: Toast? = nil
+    
     // グローバル変数
     @EnvironmentObject private var shared: GlobalSettings
     
@@ -102,9 +105,11 @@ struct ColorPaletteConfirmationView: View {
             // ここに全画面で表示するモーダルの内容を配置
             ColorPickerView(colorState: colorState,
                             isShow: $isShowColorPickerView,
-                            colorPaletteId: colorPaletteId)
+                            colorPaletteId: colorPaletteId,
+                            toast: $toast)
                 .environmentObject(GlobalSettings())
         }
+        .toastView(toast: $toast)
     }
     
     // MARK: カラー配色

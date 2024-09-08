@@ -12,13 +12,16 @@ struct RGBColorPickerView: View {
     @ObservedObject var colorState: ColorPickerViewState
     @EnvironmentObject private var shared: GlobalSettings
     
+    // トースト
+    @Binding var pickerToast: Toast?
+    
     // 触覚フィードバック
     @State private var success: Bool = false
     
     var body: some View {
         VStack {
             // MARK: カラーストレージメニュー
-            ColorStorageMenu(colorState: colorState)
+            ColorStorageMenu(colorState: colorState, pickerToast: $pickerToast)
                 .environmentObject(GlobalSettings())
             
             RGBSlider()
@@ -80,6 +83,7 @@ struct RGBColorPickerView: View {
                     UIPasteboard.general.string = colorState.colorDatas[colorState.selectedIndex].rgb.redByteScaleValue.description
                     
                     success.toggle()
+                    pickerToast = Toast(style: .success, message: "コピーしました。")
                 } label: {
                     Image(systemName: Icon.copy.symbolName())
                         .font(.title3)
@@ -174,6 +178,7 @@ struct RGBColorPickerView: View {
                         colorState.colorDatas[colorState.selectedIndex].rgb.greenByteScaleValue.description
                     
                     success.toggle()
+                    pickerToast = Toast(style: .success, message: "コピーしました。")
                 } label: {
                     Image(systemName: Icon.copy.symbolName())
                         .font(.title3)
@@ -268,6 +273,7 @@ struct RGBColorPickerView: View {
                         colorState.colorDatas[colorState.selectedIndex].rgb.blueByteScaleValue.description
                     
                     success.toggle()
+                    pickerToast = Toast(style: .success, message: "コピーしました。")
                 } label: {
                     Image(systemName: Icon.copy.symbolName())
                         .font(.title3)
@@ -370,13 +376,14 @@ struct RGBColorPickerView: View {
 
 #Preview {
     @State var isShowColorPickerView: Bool = true
+    @State var toast: Toast? = nil
     
     return VStack {
         ColorPickerView(colorState: ColorPickerViewState(colorDatas: [
         ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.5)),
         ColorData(hsb: HSBColor(hue: 0.3, saturation: 0.5, brightness: 0.2)),
         ColorData(hsb: HSBColor(hue: 0.2, saturation: 0.5, brightness: 0.8)),
-    ]), isShow: $isShowColorPickerView)
+        ]), isShow: $isShowColorPickerView, toast: $toast)
         .environmentObject(GlobalSettings())
     }
 }

@@ -48,6 +48,10 @@ struct ColorPickerView: View {
     @State var success: Bool = false
     @State var selection: Bool = false
     
+    // トースト
+    @Binding var toast: Toast?
+    @State private var pickerToast: Toast? = nil
+    
     // カラープレビューをドラッグしたかどうか
     //@State var isDragColor: Bool = false
     // バックグラウンド状態かどうか
@@ -116,6 +120,9 @@ struct ColorPickerView: View {
                                     
                                     isShow = false
                                     success.toggle()
+                                    
+                                    // トースト表示
+                                    toast = Toast(style: .success, message: "パレットを編集しました。")
                                 } else {
                                     // パレット取得失敗
                                     isShow = false
@@ -144,9 +151,9 @@ struct ColorPickerView: View {
                     // タブに応じて切り替える
                     switch currentTab {
                     case .hsb: // HSB
-                        HSBColorPickerView(colorState: colorState)
+                        HSBColorPickerView(colorState: colorState, pickerToast: $pickerToast)
                     case .rgb: // RGB
-                        RGBColorPickerView(colorState: colorState)
+                        RGBColorPickerView(colorState: colorState, pickerToast: $pickerToast)
                     }
                 }
                 .frame(width: shared.hueBarSize)
@@ -177,7 +184,7 @@ struct ColorPickerView: View {
             // カラーデータ保持
             colorDatasBackup = colorState.colorDatas
         }
-        // 変更保存のアラート
+        // MARK: 変更保存のアラート
         .alert("配色保持", isPresented: $isShowColorDataChangeAlert) {
             Button("キャンセル", role: .cancel) {
                 colorState.colorDatas = colorDatasBackup
@@ -189,7 +196,7 @@ struct ColorPickerView: View {
         } message: {
             Text("現在作成中の配色を保持しますか？")
         }
-        // パレットテーマ入力アラート
+        // MARK: パレットテーマ入力アラート
         .alert("テーマ名を入力してください。", isPresented: $isShowPaletteThemeNameInputAlert) {
             TextField("テーマ名", text: $paletteThemeName)
                 .onChange(of: paletteThemeName) {
@@ -208,8 +215,14 @@ struct ColorPickerView: View {
                 isShowPaletteThemeNameInputAlert = false
                 isShow = false
                 success.toggle()
+                
+                // トースト表示
+                toast = Toast(style: .success, message: "パレットを作成しました。")
             }
         }
+        // MARK: トースト
+        .toastView(toast: $pickerToast)
+        // MARK: 触覚フィードバック
         .sensoryFeedback(.success, trigger: success)
         .sensoryFeedback(.selection, trigger: selection)
         
@@ -354,13 +367,14 @@ struct ColorPickerView: View {
 
 #Preview {
     @State var isShowColorPickerView: Bool = true
+    @State var toast: Toast? = nil
     
     return VStack {
         ColorPickerView(colorState: ColorPickerViewState(colorDatas: [
         ColorData(hsb: HSBColor(hue: 0.5, saturation: 0.5, brightness: 0.5)),
         ColorData(hsb: HSBColor(hue: 0.3, saturation: 0.5, brightness: 0.2)),
         ColorData(hsb: HSBColor(hue: 0.2, saturation: 0.5, brightness: 0.8)),
-    ]), isShow: $isShowColorPickerView)
+        ]), isShow: $isShowColorPickerView, toast: $toast)
         .environmentObject(GlobalSettings())
     }
 }

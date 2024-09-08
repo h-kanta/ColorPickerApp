@@ -33,6 +33,14 @@ enum Icon: CaseIterable {
     case selectColorStorage
     // 編集
     case edit
+    // トースト：インフォメーション
+    case toastInfo
+    // トースト：ワーニング
+    case toastWarning
+    // トースト：成功
+    case toastSuccess
+    // トースト：エラー
+    case toastError
 }
 
 extension Icon {
@@ -62,8 +70,15 @@ extension Icon {
             return "square.and.arrow.up.on.square"
         case .edit:
             return "pencil"
+        case .toastInfo:
+            return "info.circle.fill"
+        case .toastWarning:
+            return "exclamationmark.triangle.fill"
+        case .toastSuccess:
+            return "checkmark.circle.fill"
+        case .toastError:
+            return "xmark.circle.fill"
         }
-        
         
     }
 }
