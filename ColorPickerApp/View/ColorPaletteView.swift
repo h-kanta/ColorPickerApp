@@ -63,33 +63,51 @@ struct ColorPaletteView: View {
                     // MARK: タブ
                     ColorPaletteTabView()
                     
-                    // タブに応じて切り替える
-                    switch currentTab {
-                    case .all: // HSB
-                        ScrollView {
-                            VStack(spacing: 30) {
-                                ForEach(Array(colorPalettes.enumerated()), id: \.offset) { index, colorPalette in
-                                    colorPaletteCardView(colorPalette: colorPalette,
-                                                         colorPaletteId: colorPalette.id,
-                                                         colorState: ColorPickerViewState(colorDatas: colorPalette.colorDatas),
-                                                         paletteThemeName: colorPalette.themeName)
-                                }
+                    // パレット数が 0 件の場合は、メッセージ表示
+                    if colorPalettes.count == 0 {
+                        Spacer()
+                        VStack(spacing: 10) {
+                            Text("パレットが作成されていません。")
+                            HStack {
+                                Text("カラーピッカー（")
+                                Image(systemName: Icon.paletteCreate.symbolName())
+                                    .font(.title2).fontWeight(.bold)
+                                Text("）から")
                             }
-                            .padding()
+                            Text("新しいパレットを作成してみましょう！")
                         }
-                    case .favorite: // RGB
-                        ScrollView {
-                            VStack(spacing: 30) {
-                                ForEach(Array(colorPalettes.enumerated()), id: \.offset) { index, colorPalette in
-                                    if colorPalette.isFavorite {
+                        Spacer()
+                    } else {
+                        // タブに応じて切り替える
+                        switch currentTab {
+                        case .all: // すべて
+                            ScrollView {
+                                VStack(spacing: 30) {
+                                    ForEach(Array(colorPalettes.enumerated()), id: \.offset) { index, colorPalette in
                                         colorPaletteCardView(colorPalette: colorPalette,
                                                              colorPaletteId: colorPalette.id,
                                                              colorState: ColorPickerViewState(colorDatas: colorPalette.colorDatas),
                                                              paletteThemeName: colorPalette.themeName)
                                     }
                                 }
+                                .padding()
+                                .frame(maxWidth: 600)
                             }
-                            .padding()
+                        case .favorite: // お気に入りのみ
+                            ScrollView {
+                                VStack(spacing: 30) {
+                                    ForEach(Array(colorPalettes.enumerated()), id: \.offset) { index, colorPalette in
+                                        if colorPalette.isFavorite {
+                                            colorPaletteCardView(colorPalette: colorPalette,
+                                                                 colorPaletteId: colorPalette.id,
+                                                                 colorState: ColorPickerViewState(colorDatas: colorPalette.colorDatas),
+                                                                 paletteThemeName: colorPalette.themeName)
+                                        }
+                                    }
+                                }
+                                .padding()
+                                .frame(maxWidth: 600)
+                            }
                         }
                     }
                 }
@@ -103,8 +121,6 @@ struct ColorPaletteView: View {
             Button("削除", role: .destructive) {
                 if let colorPalette = paletteDeleteTarget {
                     context.delete(colorPalette)
-                    success.toggle()
-                    toast = Toast(style: .success, message: "パレットを削除しました。")
                 }
             }
         } message: {
@@ -128,14 +144,20 @@ struct ColorPaletteView: View {
                 if let palette = paletteNameEditTarget {
                     palette.themeName = paletteThemeNameText
                     palette.updatedAt = Date()
-                    try? context.save()
                     
-                    toast = Toast(style: .success, message: "テーマ名を編集しました。")
+                    do {
+                        try context.save()
+                        success.toggle()
+                        toast = Toast(style: .success, message: "テーマ名を編集しました。")
+                    } catch {
+                        toast = Toast(style: .error, message: "例外エラーが発生しました。")
+                    }
                 }
                 
                 isShowPaletteNameEditAlert = false
-                success.toggle()
             }
+        } message: {
+            Text("※15字以内")
         }
         .toastView(toast: $toast)
         .sensoryFeedback(.success, trigger: success)
@@ -302,7 +324,9 @@ struct ColorPaletteView: View {
                     .background {
                         if currentTab == tab {
                             Capsule()
-                                .matchedGeometryEffect(id: "TAB", in: animation)
+                                .matchedGeometryEffect(id: "PALETTETAB",
+                                                       in: animation,
+                                                       isSource: true)
                         } else {
                             Capsule()
                                 .stroke(.black)
@@ -340,8 +364,12 @@ struct ColorPaletteView: View {
             colorPalette.updatedAt = Date()
         }
         
-        try? context.save()
-        success.toggle()
+        do {
+            try context.save()
+            success.toggle()
+        } catch {
+            toast = Toast(style: .error, message: "例外エラーが発生しました。")
+        }
     }
 }
 

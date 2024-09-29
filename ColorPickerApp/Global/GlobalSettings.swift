@@ -15,11 +15,18 @@ class GlobalSettings: ObservableObject {
     // 画面縦幅
     @Published var screenHeight: CGFloat
     // 色相サイズ
-    @Published var hueBarSize: CGFloat
+    @Published var hueBarSize: CGFloat = 0
     
     init() {
         screenWidth = UIScreen.main.bounds.width
         screenHeight = UIScreen.main.bounds.height
-        hueBarSize = UIScreen.main.bounds.width * 0.65
+        
+        if UIDevice.current.userInterfaceIdiom == .phone {
+           // 使用デバイスがiPhoneの場合
+            hueBarSize = UIScreen.main.bounds.width * 0.65
+        } else if UIDevice.current.userInterfaceIdiom == .pad {
+           // 使用デバイスがiPadの場合
+            hueBarSize = UIScreen.main.bounds.width * 0.55
+        }
     }
 }

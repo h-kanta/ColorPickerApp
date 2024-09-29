@@ -9,6 +9,8 @@ import Foundation
 
 // MARK: アイコン
 enum Icon: CaseIterable {
+    // パレット作成
+    case paletteCreate
     // 戻る
     case back
     // 並び替え
@@ -46,6 +48,8 @@ enum Icon: CaseIterable {
 extension Icon {
     func symbolName() -> String {
         switch self {
+        case .paletteCreate:
+            return "plus.square"
         case .back:
             return "arrow.left"
         case .sort:

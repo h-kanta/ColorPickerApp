@@ -142,10 +142,11 @@ struct HSBColorPickerView: View {
                         
                         // コピーボタン
                         Button {
-                            UIPasteboard.general.string = colorState.colorDatas[colorState.selectedIndex].hex.code
+                            let code = colorState.colorDatas[colorState.selectedIndex].hex.code
+                            UIPasteboard.general.string = code
                             
                             success.toggle()
-                            pickerToast = Toast(style: .success, message: "コピーしました。")
+                            pickerToast = Toast(style: .success, message: "「\(code)」をコピーしました。")
                         } label: {
                             Image(systemName: Icon.copy.symbolName())
                                 .font(.title3)

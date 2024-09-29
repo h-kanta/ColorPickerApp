@@ -18,7 +18,11 @@ struct SelectedColorView: View {
     @State private var selectedColor: ColorStorage?
     
     // グリッドカラム設定
-    let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 4)
+    @State var columns: [GridItem] = Array(repeating: .init(.flexible()), count: 4)
+    // グリッドカラム数
+    @State var columnCount: CGFloat = 0
+    // グリッドカラム間隔サイズ
+    @State var columnSpaceSize: CGFloat = 0
     
     @State private var success: Bool = false
     
@@ -79,6 +83,21 @@ struct SelectedColorView: View {
                 }
             }
         }
+        .onAppear {
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                // 使用デバイスがiPhoneの場合は、4列
+                columnSpaceSize = 60
+                columnCount = 4
+                columns = Array(repeating: .init(.flexible()),
+                                count: Int(columnCount))
+            } else if UIDevice.current.userInterfaceIdiom == .pad {
+                // 使用デバイスがiPadの場合は、5列
+                columnSpaceSize = 200
+                columnCount = 5
+                columns = Array(repeating: .init(.flexible()),
+                                count: Int(columnCount))
+            }
+        }
         .sensoryFeedback(.success, trigger: success)
     }
     
@@ -87,8 +106,8 @@ struct SelectedColorView: View {
         VStack(spacing: 8) {
             // カラー
             Circle()
-                .frame(width: (geometry.size.width - 60) / 5,
-                       height: (geometry.size.width - 60) / 5) // 60は各アイテムの間隔を考慮
+                .frame(width: (geometry.size.width - columnSpaceSize) / columnCount+1,
+                       height: (geometry.size.width - columnSpaceSize) / columnCount+1) // 60は各アイテムの間隔を考慮
                 .foregroundStyle(Color(red: color.rgbColor.red,
                                        green: color.rgbColor.green,
                                        blue: color.rgbColor.blue))

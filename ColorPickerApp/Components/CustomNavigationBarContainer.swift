@@ -17,7 +17,7 @@ struct CustomNavigationBarContainer<LeftContent: View, CenterContent: View, Righ
             HStack {
                 // 左
                 leftContent()
-                    .font(.title2)
+                    .font(.title)
                     .foregroundStyle(.black)
                     .fontWeight(.bold)
                 
@@ -25,7 +25,7 @@ struct CustomNavigationBarContainer<LeftContent: View, CenterContent: View, Righ
                 
                 // 右
                 rightContent()
-                    .font(.title2)
+                    .font(.title)
                     .foregroundStyle(.black)
                     .fontWeight(.bold)
             }
@@ -33,7 +33,7 @@ struct CustomNavigationBarContainer<LeftContent: View, CenterContent: View, Righ
             // 中央
             centerContent()
                 .frame(maxWidth: .infinity)
-                .font(.title3)
+                .font(.title2)
                 .fontWeight(.bold)
         }
         .padding(.horizontal)

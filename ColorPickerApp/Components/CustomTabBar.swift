@@ -53,6 +53,7 @@ struct CustomTabBar: View {
         }
         .frame(height: 49)
         .padding(.horizontal)
+        .frame(maxWidth: 600)
         .sensoryFeedback(.selection, trigger: selection)
     }
 }

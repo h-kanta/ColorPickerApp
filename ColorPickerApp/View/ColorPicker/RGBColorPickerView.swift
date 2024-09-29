@@ -80,10 +80,11 @@ struct RGBColorPickerView: View {
                 
                 // コピーボタン
                 Button {
-                    UIPasteboard.general.string = colorState.colorDatas[colorState.selectedIndex].rgb.redByteScaleValue.description
+                    let redValue: String = colorState.colorDatas[colorState.selectedIndex].rgb.redByteScaleValue.description
+                    UIPasteboard.general.string = redValue
                     
                     success.toggle()
-                    pickerToast = Toast(style: .success, message: "コピーしました。")
+                    pickerToast = Toast(style: .success, message: "「\(redValue)」をコピーしました。")
                 } label: {
                     Image(systemName: Icon.copy.symbolName())
                         .font(.title3)
@@ -174,11 +175,11 @@ struct RGBColorPickerView: View {
                 
                 // コピーボタン
                 Button {
-                    UIPasteboard.general.string =
-                        colorState.colorDatas[colorState.selectedIndex].rgb.greenByteScaleValue.description
+                    let greenValue: String = colorState.colorDatas[colorState.selectedIndex].rgb.greenByteScaleValue.description
+                    UIPasteboard.general.string = greenValue
                     
                     success.toggle()
-                    pickerToast = Toast(style: .success, message: "コピーしました。")
+                    pickerToast = Toast(style: .success, message: "「\(greenValue)」をコピーしました。")
                 } label: {
                     Image(systemName: Icon.copy.symbolName())
                         .font(.title3)
@@ -269,11 +270,11 @@ struct RGBColorPickerView: View {
                 
                 // コピーボタン
                 Button {
-                    UIPasteboard.general.string =
-                        colorState.colorDatas[colorState.selectedIndex].rgb.blueByteScaleValue.description
+                    let blueValue: String = colorState.colorDatas[colorState.selectedIndex].rgb.blueByteScaleValue.description
+                    UIPasteboard.general.string = blueValue
                     
                     success.toggle()
-                    pickerToast = Toast(style: .success, message: "コピーしました。")
+                    pickerToast = Toast(style: .success, message: "「\(blueValue)」をコピーしました。")
                 } label: {
                     Image(systemName: Icon.copy.symbolName())
                         .font(.title3)

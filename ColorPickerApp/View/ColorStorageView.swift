@@ -18,8 +18,11 @@ struct ColorStorageView: View {
     // 削除するカラー
     @State private var colorDeleteTarget: ColorStorage?
     // グリッドカラム設定
-    let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 4)
-    
+    @State var columns: [GridItem] = Array(repeating: .init(.flexible()), count: 4)
+    // グリッドカラム数
+    @State var columnCount: CGFloat = 0
+    // グリッドカラム間隔サイズ
+    @State var columnSpaceSize: CGFloat = 0
     // トースト
     @State private var toast: Toast? = nil
     
@@ -46,20 +49,51 @@ struct ColorStorageView: View {
                         }
                     )
                     
-                    // カラーグリッド
-                    GeometryReader { geometry in
-                        ScrollView {
-                            LazyVGrid(columns: columns, spacing: 30) {
-                                ForEach(colorStorages, id: \.self) { color in
-                                    colorGridItem(color: color, geometry: geometry)
-                                }
+                    // 保存済みカラーが 0 件の場合は、メッセージを表示
+                    if colorStorages.count == 0 {
+                        Spacer()
+                        VStack(spacing: 10) {
+                            Text("保存済みのカラーがありません。")
+                            HStack {
+                                Text("カラーピッカーの")
+                                Image(systemName: "\(Icon.menu.symbolName()).circle")
+                                    .font(.title2).fontWeight(.bold)
+                                Text("から")
                             }
-                            .padding()
+                            Text("お気に入りの色を保存してみましょう!")
+                        }
+                        Spacer()
+                    } else {
+                        // カラーグリッド
+                        GeometryReader { geometry in
+                            ScrollView {
+                                LazyVGrid(columns: columns, spacing: 30) {
+                                    ForEach(colorStorages, id: \.self) { color in
+                                        colorGridItem(color: color, geometry: geometry)
+                                    }
+                                }
+                                .padding()
+                            }
                         }
                     }
                 }
             }
             .frame(maxHeight: .infinity)
+        }
+        .onAppear {
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                // 使用デバイスがiPhoneの場合は、4列
+                columnSpaceSize = 60
+                columnCount = 4
+                columns = Array(repeating: .init(.flexible()),
+                                count: Int(columnCount))
+            } else if UIDevice.current.userInterfaceIdiom == .pad {
+                // 使用デバイスがiPadの場合は、5列
+                columnSpaceSize = 200
+                columnCount = 5
+                columns = Array(repeating: .init(.flexible()),
+                                count: Int(columnCount))
+            }
         }
         // カラー削除アラート
         .alert("本当に削除しますか？", isPresented: $isShowColorDeleteAlert) {
@@ -85,8 +119,10 @@ struct ColorStorageView: View {
         VStack(spacing: 8) {
             // カラー
             Circle()
-                .frame(width: (abs(geometry.size.width - 60)) / 5,
-                       height: (abs(geometry.size.width - 60)) / 5) // 60は各アイテムの間隔を考慮
+                .frame(
+                    width: (abs(geometry.size.width - columnSpaceSize)) / columnCount+1,
+                    height: (abs(geometry.size.width - columnSpaceSize)) / columnCount+1
+                )
                 .foregroundStyle(Color(red: color.rgbColor.red,
                                        green: color.rgbColor.green,
                                        blue: color.rgbColor.blue))
@@ -107,7 +143,7 @@ struct ColorStorageView: View {
                 UIPasteboard.general.string = code
                 
                 success.toggle()
-                toast = Toast(style: .success, message: "コピーしました。")
+                toast = Toast(style: .success, message: "「\(code)」をコピーしました。")
             } label: {
                 HStack {
                     Text("コピー")

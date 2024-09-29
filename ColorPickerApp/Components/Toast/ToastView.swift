@@ -39,6 +39,7 @@ struct ToastView: View {
             Capsule()
                 .opacity(0.03)
         )
+        .frame(maxWidth: 560)
         .padding(.horizontal, 16)
     }
 }

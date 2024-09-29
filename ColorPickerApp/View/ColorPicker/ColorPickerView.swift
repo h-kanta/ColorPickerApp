@@ -116,13 +116,19 @@ struct ColorPickerView: View {
                                     // パレット取得成功
                                     colorPalette.colorDatas = colorState.colorDatas
                                     colorPalette.updatedAt = Date()
-                                    try? context.save()
+                                    
+                                    do {
+                                        try context.save()
+                                        success.toggle()
+                                        
+                                        // トースト表示
+                                        toast = Toast(style: .success, message: "パレットを編集しました。")
+                                    } catch {
+                                        // トースト表示
+                                        toast = Toast(style: .error, message: "例外エラーが発生しました。")
+                                    }
                                     
                                     isShow = false
-                                    success.toggle()
-                                    
-                                    // トースト表示
-                                    toast = Toast(style: .success, message: "パレットを編集しました。")
                                 } else {
                                     // パレット取得失敗
                                     isShow = false
@@ -142,12 +148,17 @@ struct ColorPickerView: View {
                     }
                 )
                 
+                // カラーピッカータブ
+                ColorPickerTabView()
+                    .padding(.bottom)
+                
+                // ipad の場合はスライダーが中央になるように設定する
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    Spacer()
+                }
+                
                 // MARK: カラーコントロール
                 VStack {
-                    // カラーピッカータブ
-                    ColorPickerTabView()
-                        .padding(.bottom)
-                    
                     // タブに応じて切り替える
                     switch currentTab {
                     case .hsb: // HSB
@@ -200,12 +211,12 @@ struct ColorPickerView: View {
         .alert("テーマ名を入力してください。", isPresented: $isShowPaletteThemeNameInputAlert) {
             TextField("テーマ名", text: $paletteThemeName)
                 .onChange(of: paletteThemeName) {
-                    // 最大桁数6桁を超えた場合、テキストを切り詰める
+                    // 最大桁数15桁を超えた場合、テキストを切り詰める
                     if paletteThemeName.count > 15 {
                         paletteThemeName = String(paletteThemeName.prefix(15))
                     }
                 }
-            
+
             Button("キャンセル") {
                 isShowPaletteThemeNameInputAlert = false
             }
@@ -219,6 +230,9 @@ struct ColorPickerView: View {
                 // トースト表示
                 toast = Toast(style: .success, message: "パレットを作成しました。")
             }
+        } message: {
+            Text("※15文字以内で入力できます。")
+            Text("※未入力での作成も可能です。")
         }
         // MARK: トースト
         .toastView(toast: $pickerToast)
