@@ -10,11 +10,6 @@ import SwiftData
 
 struct ColorPaletteConfirmationView: View {
     @Environment(\.dismiss) private var dismiss
-    // SwiftData 用
-    @Environment(\.modelContext) private var context
-    // ColorPalette のデータを取得するために宣言
-    @Query private var colorPalettes: [ColorPalette]
-    
     // トースト
     @State private var toast: Toast? = nil
     

@@ -41,7 +41,7 @@ struct ColorStorageView: View {
                         },
                         // 中央
                         centerContent: {
-                            Text("カラー")
+                            Text("保存済みカラー")
                         },
                         // 右
                         rightContent: {
@@ -83,13 +83,13 @@ struct ColorStorageView: View {
         .onAppear {
             if UIDevice.current.userInterfaceIdiom == .phone {
                 // 使用デバイスがiPhoneの場合は、4列
-                columnSpaceSize = 60
+                columnSpaceSize = 100
                 columnCount = 4
                 columns = Array(repeating: .init(.flexible()),
                                 count: Int(columnCount))
             } else if UIDevice.current.userInterfaceIdiom == .pad {
                 // 使用デバイスがiPadの場合は、5列
-                columnSpaceSize = 200
+                columnSpaceSize = 250
                 columnCount = 5
                 columns = Array(repeating: .init(.flexible()),
                                 count: Int(columnCount))
@@ -120,8 +120,8 @@ struct ColorStorageView: View {
             // カラー
             Circle()
                 .frame(
-                    width: (abs(geometry.size.width - columnSpaceSize)) / columnCount+1,
-                    height: (abs(geometry.size.width - columnSpaceSize)) / columnCount+1
+                    width: abs((geometry.size.width - columnSpaceSize) / columnCount+1),
+                    height: abs((geometry.size.width - columnSpaceSize) / columnCount+1)
                 )
                 .foregroundStyle(Color(red: color.rgbColor.red,
                                        green: color.rgbColor.green,

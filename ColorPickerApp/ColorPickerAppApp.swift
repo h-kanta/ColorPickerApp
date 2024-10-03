@@ -10,10 +10,36 @@ import SwiftData
 
 @main
 struct ColorPickerAppApp: App {
-//    var sharedModelContainer: ModelContainer = {
+    var sharedModelContainer: ModelContainer = {
+        let schema = Schema([
+            ColorPalette.self,
+            ColorStorage.self,
+        ])
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        
+        do {
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+        } catch {
+            fatalError("Could not create ModelContainer: \(error)")
+        }
+    }()
+    
+//    var paletteSharedModelContainer: ModelContainer = {
 //        let schema = Schema([
 //            ColorPalette.self,
-//            FavoriteColor.self,
+//        ])
+//        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+//
+//        do {
+//            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+//        } catch {
+//            fatalError("Could not create ModelContainer: \(error)")
+//        }
+//    }()
+//    
+//    var storageSharedModelContainer: ModelContainer = {
+//        let schema = Schema([
+//            ColorStorage.self,
 //        ])
 //        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 //
@@ -25,12 +51,12 @@ struct ColorPickerAppApp: App {
 //    }()
 
     var body: some Scene {
-        
         WindowGroup {
             ContentView()
                 .environmentObject(GlobalSettings())
-                .modelContainer(for: [ColorPalette.self, ColorStorage.self])
+                .modelContainer(sharedModelContainer)
+//                .modelContainer(paletteSharedModelContainer)
+//                .modelContainer(storageSharedModelContainer)
         }
-        //.modelContainer(sharedModelContainer)
     }
 }

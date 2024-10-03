@@ -83,7 +83,9 @@ struct ColorPaletteView: View {
                         case .all: // すべて
                             ScrollView {
                                 VStack(spacing: 30) {
-                                    ForEach(Array(colorPalettes.enumerated()), id: \.offset) { index, colorPalette in
+                                    ForEach(Array(colorPalettes.enumerated()), id: \.offset) {
+                                        index, colorPalette in
+                                        let _ = print(colorPalette.colorDatas[2].hex.code)
                                         colorPaletteCardView(colorPalette: colorPalette,
                                                              colorPaletteId: colorPalette.id,
                                                              colorState: ColorPickerViewState(colorDatas: colorPalette.colorDatas),
@@ -164,7 +166,7 @@ struct ColorPaletteView: View {
     }
     
     // MARK: カラーパレットカード
-    @ViewBuilder
+//    @ViewBuilder
     func colorPaletteCardView(colorPalette: ColorPalette, 
                               colorPaletteId: String,
                               colorState: ColorPickerViewState,

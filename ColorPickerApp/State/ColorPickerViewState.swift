@@ -23,6 +23,8 @@ class ColorPickerViewState: ObservableObject {
         self.selectedIndex = 0
         //self.isDragging = false
 //        self.showColorPickerView = false
+        
+        //print(self.colorDatas[2].hex.code)
     }
     
     // MARK: コンバート

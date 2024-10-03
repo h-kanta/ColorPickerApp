@@ -106,8 +106,8 @@ struct SelectedColorView: View {
         VStack(spacing: 8) {
             // カラー
             Circle()
-                .frame(width: (geometry.size.width - columnSpaceSize) / columnCount+1,
-                       height: (geometry.size.width - columnSpaceSize) / columnCount+1) // 60は各アイテムの間隔を考慮
+                .frame(width: abs((geometry.size.width - columnSpaceSize) / columnCount+1),
+                       height: abs((geometry.size.width - columnSpaceSize) / columnCount+1)) // 60は各アイテムの間隔を考慮
                 .foregroundStyle(Color(red: color.rgbColor.red,
                                        green: color.rgbColor.green,
                                        blue: color.rgbColor.blue))
