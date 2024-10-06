@@ -231,8 +231,7 @@ struct ColorPickerView: View {
                 toast = Toast(style: .success, message: "パレットを作成しました。")
             }
         } message: {
-            Text("※15文字以内で入力できます。")
-            Text("※未入力での作成も可能です。")
+            Text("テーマ名は15文字以内で入力してください。\n未入力でも作成可能です。")
         }
         // MARK: トースト
         .toastView(toast: $pickerToast)
@@ -380,8 +379,8 @@ struct ColorPickerView: View {
 }
 
 #Preview {
-    @State var isShowColorPickerView: Bool = true
-    @State var toast: Toast? = nil
+    @Previewable @State var isShowColorPickerView: Bool = true
+    @Previewable @State var toast: Toast? = nil
     
     return VStack {
         ColorPickerView(colorState: ColorPickerViewState(colorDatas: [

@@ -58,7 +58,7 @@ struct ColorStorageView: View {
                                 Text("カラーピッカーの")
                                 Image(systemName: "\(Icon.menu.symbolName()).circle")
                                     .font(.title2).fontWeight(.bold)
-                                Text("から")
+                                Text("メニューから")
                             }
                             Text("お気に入りの色を保存してみましょう!")
                         }
@@ -120,8 +120,8 @@ struct ColorStorageView: View {
             // カラー
             Circle()
                 .frame(
-                    width: abs((geometry.size.width - columnSpaceSize) / columnCount+1),
-                    height: abs((geometry.size.width - columnSpaceSize) / columnCount+1)
+                    width: abs((abs(geometry.size.width - columnSpaceSize)) / abs(columnCount+1)),
+                    height: abs((abs(geometry.size.width - columnSpaceSize)) / abs(columnCount+1))
                 )
                 .foregroundStyle(Color(red: color.rgbColor.red,
                                        green: color.rgbColor.green,

@@ -86,13 +86,13 @@ struct SelectedColorView: View {
         .onAppear {
             if UIDevice.current.userInterfaceIdiom == .phone {
                 // 使用デバイスがiPhoneの場合は、4列
-                columnSpaceSize = 60
+                columnSpaceSize = 100
                 columnCount = 4
                 columns = Array(repeating: .init(.flexible()),
                                 count: Int(columnCount))
             } else if UIDevice.current.userInterfaceIdiom == .pad {
                 // 使用デバイスがiPadの場合は、5列
-                columnSpaceSize = 200
+                columnSpaceSize = 250
                 columnCount = 5
                 columns = Array(repeating: .init(.flexible()),
                                 count: Int(columnCount))
@@ -106,8 +106,8 @@ struct SelectedColorView: View {
         VStack(spacing: 8) {
             // カラー
             Circle()
-                .frame(width: abs((geometry.size.width - columnSpaceSize) / columnCount+1),
-                       height: abs((geometry.size.width - columnSpaceSize) / columnCount+1)) // 60は各アイテムの間隔を考慮
+                .frame(width: abs((abs(geometry.size.width - columnSpaceSize)) / abs(columnCount+1)),
+                       height: abs((abs(geometry.size.width - columnSpaceSize)) / abs(columnCount+1))) // 60は各アイテムの間隔を考慮
                 .foregroundStyle(Color(red: color.rgbColor.red,
                                        green: color.rgbColor.green,
                                        blue: color.rgbColor.blue))

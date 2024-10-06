@@ -85,7 +85,6 @@ struct ColorPaletteView: View {
                                 VStack(spacing: 30) {
                                     ForEach(Array(colorPalettes.enumerated()), id: \.offset) {
                                         index, colorPalette in
-                                        let _ = print(colorPalette.colorDatas[2].hex.code)
                                         colorPaletteCardView(colorPalette: colorPalette,
                                                              colorPaletteId: colorPalette.id,
                                                              colorState: ColorPickerViewState(colorDatas: colorPalette.colorDatas),

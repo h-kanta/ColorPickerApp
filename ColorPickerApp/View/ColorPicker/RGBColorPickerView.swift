@@ -376,8 +376,8 @@ struct RGBColorPickerView: View {
 }
 
 #Preview {
-    @State var isShowColorPickerView: Bool = true
-    @State var toast: Toast? = nil
+    @Previewable @State var isShowColorPickerView: Bool = true
+    @Previewable @State var toast: Toast? = nil
     
     return VStack {
         ColorPickerView(colorState: ColorPickerViewState(colorDatas: [

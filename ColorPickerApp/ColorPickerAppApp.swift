@@ -16,6 +16,8 @@ struct ColorPickerAppApp: App {
             ColorStorage.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+//        let pmodelConfiguration = ModelConfiguration(schema: Schema([ColorPalette.self]), isStoredInMemoryOnly: false)
+//        let smodelConfiguration = ModelConfiguration(schema: Schema([ColorStorage.self]), isStoredInMemoryOnly: false)
         
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])

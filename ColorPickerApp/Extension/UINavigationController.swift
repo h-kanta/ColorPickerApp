@@ -8,7 +8,7 @@
 import SwiftUI
 
 // UINavigationController を拡張して、デフォルトの動作をカスタマイズ
-extension UINavigationController: UIGestureRecognizerDelegate {
+extension UINavigationController: @retroactive UIGestureRecognizerDelegate {
     // viewDidLoad() メソッドは、ビューがロードされたときに呼び出されます。
     // このメソッドをオーバーライドして、インタラクティブポップジェスチャーのデリゲート (delegate) を self に設定しています。
     // これにより、ポップジェスチャーが開始されるかどうかの判断が、UINavigationController 自身のデリゲートメソッドで行われるようになります。

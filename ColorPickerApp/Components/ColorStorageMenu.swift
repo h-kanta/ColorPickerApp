@@ -106,7 +106,7 @@ struct ColorStorageMenu: View {
 }
 
 #Preview {
-    @State var toast: Toast? = nil
+    @Previewable @State var toast: Toast? = nil
     
     return VStack {
         ColorStorageMenu(colorState: ColorPickerViewState(colorDatas: [
